@@ -24,7 +24,6 @@ class userController {
     }
     try {
       const user = await userService.findByCredentials(email, password);
-      user.password = undefined;
       user.firstName = undefined;
       user.lastName = undefined;
       user.middleName = undefined;
