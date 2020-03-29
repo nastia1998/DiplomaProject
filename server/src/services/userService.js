@@ -3,8 +3,33 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 class UserService {
+  static async addManager(newManager) {
+    try {
+      return await db.User.create(newManager);
+    } catch (error) {
+      return error.message;
+    }
+  }
+  static async getManagers() {
+    try {
+      return await db.User.findAll({ where: { role: "manager" } });
+    } catch (error) {
+      return error.message;
+    }
+  }
+  static async removeManager(id) {
+    try {
+      const manager = await this.findUser(id);
+      manager.destroy();
+      return manager;
+    } catch (error) {
+      return error.message;
+    }
+  }
+
   static async addUser(newUser) {
     try {
+      console.log(newUser);
       return await db.User.create(newUser);
     } catch (error) {
       return error.message;
@@ -18,12 +43,13 @@ class UserService {
         throw new Error("Invalid email credentials");
       }
       const isPasswordMatch = await bcrypt.compare(password, user.password);
+      console.log(isPasswordMatch);
       if (!isPasswordMatch) {
         throw new Error("Invalid login credentials");
       }
       return user;
     } catch (error) {
-      throw error;
+      return error.message;
     }
   }
 
@@ -41,8 +67,6 @@ class UserService {
 
   static async updateUserInfo(userInfo, userId) {
     try {
-      console.log(userInfo);
-      console.log(userId);
       return await db.User.update(
         {
           firstName: userInfo.firstname,

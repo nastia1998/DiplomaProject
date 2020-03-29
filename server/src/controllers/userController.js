@@ -1,6 +1,40 @@
 import userService from "../services/userService";
 
 class userController {
+  static async addManager(req, res) {
+    const { email } = req.body;
+    const manager = req.body;
+    manager.role = "manager";
+    manager.password = "Initial1";
+    if (!email) {
+      return res.json("Email is required");
+    }
+    try {
+      const createdManager = await userService.addManager(manager);
+      createdManager.password = undefined;
+      const managerData = { manager: createdManager };
+      return res.status(201).send({ managerData });
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+  static async getManagers(req, res) {
+    try {
+      const managers = await userService.getManagers();
+      return res.status(200).send(managers);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+  static async removeManager(req, res) {
+    try {
+      const { manager_id } = req.params;
+      const remManager = await userService.removeManager(manager_id);
+      return res.send(remManager);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
   static async addUser(req, res) {
     const { email, password } = req.body;
     const user = req.body;
@@ -9,6 +43,7 @@ class userController {
     }
     try {
       const createdUser = await userService.addUser(user);
+      console.log(createdUser);
       createdUser.password = undefined;
       const userData = { user: createdUser };
       return res.status(201).send({ userData });
@@ -32,6 +67,7 @@ class userController {
       const userData = { user, token };
       return res.send(userData);
     } catch (error) {
+      console.log(error);
       return res.status(400).send(error.message);
     }
   }

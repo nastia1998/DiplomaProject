@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.addConstraint("Users", ["role"], {
       type: "check",
       where: {
-        role: ["student", "mentor", "manager"]
+        role: ["student", "mentor", "manager", "admin"]
       }
     });
   },
