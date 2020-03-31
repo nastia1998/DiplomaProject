@@ -14,6 +14,8 @@ exports.roles = (function() {
     .createOwn("mentor")
     .createOwn("level")
     .createOwn("skill")
+    .readAny("level")
+    .readAny("skill")
     .updateAny("mentor")
     .updateAny("skill")
     .updateAny("level")

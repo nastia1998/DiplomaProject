@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Skill.associate = ({ Level }) => {
-    Skill.hasMany(Level, { foreignKey: "fk_level_id" });
+    Skill.belongsTo(Level, { foreignKey: "level_id" });
   };
   return Skill;
 };
