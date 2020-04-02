@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
   TableContainer,
@@ -120,9 +120,7 @@ const useStyles2 = makeStyles({
     minWidth: 500
   }
 });
-export default function SkillsTable() {
-  const [skillsList, setSkillsList] = useState([]);
-  const [levelsList, setLevelsList] = useState([]);
+export default function SkillsTable(props) {
   const [isEdit, setIsEdit] = useState(false);
   const [levelVal, setLevelVal] = useState(0);
 
@@ -131,7 +129,8 @@ export default function SkillsTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(2);
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, skillsList.length - page * rowsPerPage);
+    rowsPerPage -
+    Math.min(rowsPerPage, props.skillsList.length - page * rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -183,7 +182,7 @@ export default function SkillsTable() {
       }
     );
     if (data) {
-      fetchData();
+      props.updateSkillsList();
     }
   };
   const updateSkillInfo = async (skill_id, v, lvl_id) => {
@@ -202,7 +201,7 @@ export default function SkillsTable() {
       }
     );
     if (data) {
-      fetchData();
+      props.updateSkillsList();
     }
   };
 
@@ -213,7 +212,7 @@ export default function SkillsTable() {
     };
 
     copyRow.edit = copyRow.edit || true;
-    setSkillsList([copyRow, ...skillsList]);
+    props.setSkillsList([copyRow, ...props.skillsList]);
     copyRow.contentEditable = "true";
   };
 
@@ -226,42 +225,12 @@ export default function SkillsTable() {
         }
       }
     );
-    fetchData();
+    props.updateSkillsList();
   };
 
   const handleChangeLevel = event => {
     setLevelVal(event.target.value);
   };
-
-  async function fetchData() {
-    const { data } = await axios.get(
-      "http://localhost:3000/api/v1/skills/manager",
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      }
-    );
-    setSkillsList(data);
-  }
-
-  async function fetchLevelsData() {
-    const { data } = await axios.get(
-      "http://localhost:3000/api/v1/levels/manager",
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      }
-    );
-    setLevelsList(data);
-    setLevelVal(data[0].id);
-  }
-
-  useEffect(() => {
-    fetchData();
-    fetchLevelsData();
-  }, []);
 
   return (
     <Paper style={(styles.paper, styles.fixedHeight)}>
@@ -296,11 +265,11 @@ export default function SkillsTable() {
           </TableHead>
           <TableBody id="skillsTableBody">
             {(rowsPerPage > 0
-              ? skillsList.slice(
+              ? props.skillsList.slice(
                   page * rowsPerPage,
                   page * rowsPerPage + rowsPerPage
                 )
-              : skillsList
+              : props.skillsList
             ).map(row => (
               <TableRow
                 id={row.id}
@@ -338,7 +307,7 @@ export default function SkillsTable() {
                 <TableCell align="center">
                   {row.edit === true ? (
                     <NativeSelect value={levelVal} onChange={handleChangeLevel}>
-                      {levelsList.map(item => (
+                      {props.levelsList.map(item => (
                         <option key={item.id} value={item.id}>
                           {item.value} {item.time_level}
                         </option>
@@ -362,7 +331,7 @@ export default function SkillsTable() {
                 labelRowsPerPage=""
                 // rowsPerPageOptions={{ paging: false }}
                 rowsPerPageOptions=""
-                count={skillsList.length}
+                count={props.skillsList.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onChangePage={handleChangePage}

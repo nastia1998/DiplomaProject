@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
   TableContainer,
@@ -126,7 +126,6 @@ const useStyles2 = makeStyles({
   }
 });
 export default function LevelsTable(props) {
-  const [levelsList, setLevelsList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
 
   const classes = useStyles2();
@@ -134,7 +133,8 @@ export default function LevelsTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(2);
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, levelsList.length - page * rowsPerPage);
+    rowsPerPage -
+    Math.min(rowsPerPage, props.levelsList.length - page * rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -196,8 +196,7 @@ export default function LevelsTable(props) {
       }
     );
     if (data) {
-      fetchData();
-      // props.updateLevelsList();
+      props.updateLevelsList();
     }
   };
   const updateLevelInfo = async (lvl_id, v, t, d) => {
@@ -216,7 +215,8 @@ export default function LevelsTable(props) {
       }
     );
     if (data) {
-      fetchData();
+      props.updateLevelsList();
+      props.updateSkillsList();
     }
   };
 
@@ -227,7 +227,7 @@ export default function LevelsTable(props) {
     };
 
     copyRow.edit = copyRow.edit || true;
-    setLevelsList([copyRow, ...levelsList]);
+    props.setLevelsList([copyRow, ...props.levelsList]);
     copyRow.contentEditable = "true";
   };
 
@@ -241,24 +241,9 @@ export default function LevelsTable(props) {
         }
       }
     );
-    fetchData();
+    props.updateLevelsList();
+    props.updateSkillsList();
   };
-
-  async function fetchData() {
-    const { data } = await axios.get(
-      "http://localhost:3000/api/v1/levels/manager",
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      }
-    );
-    setLevelsList(data);
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
     <Paper style={(styles.paper, styles.fixedHeight)}>
@@ -293,11 +278,11 @@ export default function LevelsTable(props) {
           </TableHead>
           <TableBody id="levelsTableBody">
             {(rowsPerPage > 0
-              ? levelsList.slice(
+              ? props.levelsList.slice(
                   page * rowsPerPage,
                   page * rowsPerPage + rowsPerPage
                 )
-              : levelsList
+              : props.levelsList
             ).map(row => (
               <TableRow
                 id={row.id}
@@ -348,7 +333,7 @@ export default function LevelsTable(props) {
                 labelRowsPerPage=""
                 // rowsPerPageOptions={{ paging: false }}
                 rowsPerPageOptions=""
-                count={levelsList.length}
+                count={props.levelsList.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onChangePage={handleChangePage}
