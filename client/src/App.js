@@ -5,8 +5,25 @@ import NavBar from "./components/NavBar";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import Profile from "./components/Profile";
+import ManagerDashboard from "./components/ManagerDashboard";
 
-function App() {
+import Typography from "@material-ui/core/Typography";
+import Link from "@material-ui/core/Link";
+import Box from "@material-ui/core/Box";
+
+function Copyright() {
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {"Copyright © "}
+      <Link color="inherit" href="https://material-ui.com/">
+        Manage your skills
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
+export default function App() {
   const [isLogin, setIsLogin] = React.useState(
     localStorage.getItem("loggedIn")
   );
@@ -32,9 +49,16 @@ function App() {
           path="/profile"
           render={props => <Profile {...props} isLogin={isLogin} />}
         />
+        <Route
+          name="managerdashboard"
+          exact
+          path="/managerdashboard"
+          component={ManagerDashboard}
+        />
       </Router>
+      <Box pt={4}>
+        <Copyright />
+      </Box>
     </div>
   );
 }
-
-export default App;

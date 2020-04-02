@@ -6,26 +6,12 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 
 import styles from "../styles/SignUpIn.css.js";
 import axios from "axios";
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Manage your skills
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 export default function SignIn(props) {
   let history = useHistory();
@@ -62,7 +48,20 @@ export default function SignIn(props) {
         localStorage.setItem("loggedIn", true);
         props.handleLogin();
         localStorage.setItem("token", data.token);
-        history.push("/profile");
+        localStorage.setItem("role", data.user.role);
+        switch (localStorage.getItem("role")) {
+          case "manager":
+            history.push("/managerdashboard");
+            break;
+          case "mentor":
+            break;
+          case "student":
+            break;
+          case "admin":
+            break;
+          default:
+            break;
+        }
       } catch (e) {
         console.log(e);
         alert("Authorization failed. Check your input values!");
@@ -125,9 +124,6 @@ export default function SignIn(props) {
           </Grid>
         </form>
       </div>
-      <Box mt={5}>
-        <Copyright />
-      </Box>
     </Container>
   );
 }
