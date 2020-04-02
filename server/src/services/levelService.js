@@ -11,7 +11,9 @@ class LevelService {
 
   static async getLevels() {
     try {
-      return await db.Level.findAll();
+      return await db.Level.findAll({
+        order: ["id"]
+      });
     } catch (error) {
       return error.message;
     }

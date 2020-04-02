@@ -7,7 +7,9 @@ module.exports = {
       references: {
         model: "Levels",
         key: "id"
-      }
+      },
+      onUpdate: "CASCADE",
+      onDelete: "SET NULL"
     });
   },
 

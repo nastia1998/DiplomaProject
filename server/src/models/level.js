@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Level.associate = ({ Skill }) => {
-    Level.hasMany(Skill, { foreignKey: "level_id" });
+    Level.hasMany(Skill, { foreignKey: "level_id", onDelete: "cascade" });
   };
   return Level;
 };
