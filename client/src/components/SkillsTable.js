@@ -9,7 +9,8 @@ import {
   TableRow,
   Toolbar,
   TableFooter,
-  TablePagination
+  TablePagination,
+  NativeSelect
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
@@ -32,15 +33,9 @@ import axios from "axios";
 import styles from "../styles/ManagerDashboard.css";
 
 const columns = [
-  { id: "action", label: "Action", minWidth: 20, align: "center" },
-  { id: "value", label: "Value", minWidth: 20, align: "center" },
-  { id: "time", label: "Time for level", minWidth: 20, align: "center" },
-  {
-    id: "description",
-    label: "Description",
-    minWidth: 170,
-    align: "center"
-  }
+  { id: "action", label: "Action", minWidth: 10, align: "left" },
+  { id: "name", label: "Name", minWidth: 10, align: "center" },
+  { id: "level", label: "Level", minWidth: 20, align: "center" }
 ];
 
 const useStyles1 = makeStyles(theme => ({
@@ -125,16 +120,18 @@ const useStyles2 = makeStyles({
     minWidth: 500
   }
 });
-export default function LevelsTable(props) {
+export default function SkillsTable() {
+  const [skillsList, setSkillsList] = useState([]);
   const [levelsList, setLevelsList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
+  const [levelVal, setLevelVal] = useState(0);
 
   const classes = useStyles2();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(2);
 
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, levelsList.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, skillsList.length - page * rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -152,42 +149,32 @@ export default function LevelsTable(props) {
   };
 
   const handleEditableRow = editRow => {
-    const levelTable = document.getElementsByClassName("levelsTable")[0];
-    const index = findIndex(levelTable, editRow);
-    const row = levelTable.rows[index];
+    const skillTable = document.getElementsByClassName("skillsTable")[0];
+    const index = findIndex(skillTable, editRow);
+    const row = skillTable.rows[index];
     editRow.edit = editRow.edit || false;
+
     if (editRow.edit) {
       if (editRow.id === 0) {
-        addLevel(
-          row.cells[1].innerHTML,
-          row.cells[2].innerHTML,
-          row.cells[3].innerHTML
-        );
+        addSkill(row.cells[1].innerHTML, levelVal);
       } else {
-        updateLevelInfo(
-          editRow.id,
-          row.cells[1].innerHTML,
-          row.cells[2].innerHTML,
-          row.cells[3].innerHTML
-        );
+        updateSkillInfo(editRow.id, row.cells[1].innerHTML, levelVal);
       }
       row.contentEditable = "false";
     } else {
       row.contentEditable = "true";
     }
     editRow.edit = !editRow.edit;
-
     setIsEdit(editRow.edit);
   };
 
-  const addLevel = async (v, t, d) => {
+  const addSkill = async (n, l) => {
     const body = {
-      value: v,
-      time_level: t,
-      description: d
+      name: n,
+      level_id: l
     };
     const { data } = await axios.post(
-      "http://localhost:3000/api/v1/levels/manager",
+      "http://localhost:3000/api/v1/skills/manager",
       body,
       {
         headers: {
@@ -197,17 +184,16 @@ export default function LevelsTable(props) {
     );
     if (data) {
       fetchData();
-      // props.updateLevelsList();
     }
   };
-  const updateLevelInfo = async (lvl_id, v, t, d) => {
+  const updateSkillInfo = async (skill_id, v, lvl_id) => {
     const body = {
-      value: v,
-      time_level: t,
-      description: d
+      name: v,
+      level_id: parseInt(lvl_id)
     };
+    console.log(body);
     const { data } = await axios.put(
-      `http://localhost:3000/api/v1/levels/${lvl_id}/manager`,
+      `http://localhost:3000/api/v1/skills/${skill_id}/manager`,
       body,
       {
         headers: {
@@ -227,14 +213,13 @@ export default function LevelsTable(props) {
     };
 
     copyRow.edit = copyRow.edit || true;
-    setLevelsList([copyRow, ...levelsList]);
+    setSkillsList([copyRow, ...skillsList]);
     copyRow.contentEditable = "true";
   };
 
   const handleDeleteRow = async id => {
-    console.log(id);
     const { data } = await axios.delete(
-      `http://localhost:3000/api/v1/levels/${id}/manager`,
+      `http://localhost:3000/api/v1/skills/${id}/manager`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -244,7 +229,23 @@ export default function LevelsTable(props) {
     fetchData();
   };
 
+  const handleChangeLevel = event => {
+    setLevelVal(event.target.value);
+  };
+
   async function fetchData() {
+    const { data } = await axios.get(
+      "http://localhost:3000/api/v1/skills/manager",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+    setSkillsList(data);
+  }
+
+  async function fetchLevelsData() {
     const { data } = await axios.get(
       "http://localhost:3000/api/v1/levels/manager",
       {
@@ -254,10 +255,12 @@ export default function LevelsTable(props) {
       }
     );
     setLevelsList(data);
+    setLevelVal(data[0].id);
   }
 
   useEffect(() => {
     fetchData();
+    fetchLevelsData();
   }, []);
 
   return (
@@ -265,7 +268,7 @@ export default function LevelsTable(props) {
       <Toolbar>
         {" "}
         <Typography id="tableTitle" component="div">
-          Levels
+          Skills
         </Typography>
         <IconButton onClick={() => handleAddRow()}>
           <AddCircleOutlineIcon />
@@ -273,10 +276,10 @@ export default function LevelsTable(props) {
       </Toolbar>
       <TableContainer>
         <Table
-          className={`levelsTable ${classes.table}`}
+          className={`skillsTable ${classes.table}`}
           stickyHeader
           size="small"
-          id="levelsTable"
+          id="skillsTable"
         >
           <TableHead>
             <TableRow>
@@ -291,13 +294,13 @@ export default function LevelsTable(props) {
               ))}
             </TableRow>
           </TableHead>
-          <TableBody id="levelsTableBody">
+          <TableBody id="skillsTableBody">
             {(rowsPerPage > 0
-              ? levelsList.slice(
+              ? skillsList.slice(
                   page * rowsPerPage,
                   page * rowsPerPage + rowsPerPage
                 )
-              : levelsList
+              : skillsList
             ).map(row => (
               <TableRow
                 id={row.id}
@@ -331,9 +334,20 @@ export default function LevelsTable(props) {
                     <ClearOutlinedIcon />
                   </IconButton>
                 </TableCell>
-                <TableCell align="center">{row.value}</TableCell>
-                <TableCell align="center">{row.time_level}</TableCell>
-                <TableCell align="center">{row.description}</TableCell>
+                <TableCell align="center">{row.name}</TableCell>
+                <TableCell align="center">
+                  {row.edit === true ? (
+                    <NativeSelect value={levelVal} onChange={handleChangeLevel}>
+                      {levelsList.map(item => (
+                        <option key={item.id} value={item.id}>
+                          {item.value} {item.time_level}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  ) : row.Level ? (
+                    row.Level.value + " " + row.Level.time_level
+                  ) : null}
+                </TableCell>
               </TableRow>
             ))}
             {emptyRows > 0 && (
@@ -348,7 +362,7 @@ export default function LevelsTable(props) {
                 labelRowsPerPage=""
                 // rowsPerPageOptions={{ paging: false }}
                 rowsPerPageOptions=""
-                count={levelsList.length}
+                count={skillsList.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onChangePage={handleChangePage}
