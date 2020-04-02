@@ -14,7 +14,13 @@ class SkillService {
 
   static async getSkills() {
     try {
-      return await db.Skill.findAll();
+      return await db.Skill.findAll({
+        include: {
+          model: db.Level,
+          attributes: ["id", "value", "time_level"]
+        },
+        order: ["id"]
+      });
     } catch (error) {
       return error.message;
     }
@@ -37,6 +43,20 @@ class SkillService {
       return error.message;
     }
   }
+
+  // static async getSkillByLevel(level_id) {
+  //   try {
+  //     return await db.Skill.findAll({
+  //       where: {
+  //         level_id
+  //       },
+  //       include: {
+  //         model: db.Level,
+  //         attributes: ["id", "value", "time_level"]
+  //       }
+  //     });
+  //   }
+  // }
 
   static async updateSkillInfo(skillInfo, skillId) {
     try {
