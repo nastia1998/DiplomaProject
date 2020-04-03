@@ -3,34 +3,45 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 class UserService {
-  static async addManager(newManager) {
+  static async addUser(newUser) {
     try {
-      return await db.User.create(newManager);
-    } catch (error) {
-      return error.message;
-    }
-  }
-  static async getManagers() {
-    try {
-      return await db.User.findAll({ where: { role: "manager" } });
-    } catch (error) {
-      return error.message;
-    }
-  }
-  static async removeManager(id) {
-    try {
-      const manager = await this.findUser(id);
-      manager.destroy();
-      return manager;
+      return await db.User.create(newUser);
     } catch (error) {
       return error.message;
     }
   }
 
-  static async addUser(newUser) {
+  static async updateUserInfo(userInfo, userId) {
     try {
-      console.log(newUser);
-      return await db.User.create(newUser);
+      return await db.User.update(
+        {
+          firstName: userInfo.firstname,
+          lastName: userInfo.lastname,
+          middleName: userInfo.middlename
+        },
+        {
+          where: {
+            id: userId
+          }
+        }
+      );
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async updateRole(userId, newRole) {
+    try {
+      return await db.User.update(
+        {
+          role: newRole
+        },
+        {
+          where: {
+            id: userId
+          }
+        }
+      );
     } catch (error) {
       return error.message;
     }
@@ -61,27 +72,36 @@ class UserService {
     }
   }
 
-  static async generateAuthToken(userId) {
-    return jwt.sign({ id: userId }, process.env.JWT_KEY, { expiresIn: "1h" });
-  }
+  // --------------------------------------- Managers Logic -------------------------------------------------
 
-  static async updateUserInfo(userInfo, userId) {
+  static async getManagers() {
     try {
-      return await db.User.update(
-        {
-          firstName: userInfo.firstname,
-          lastName: userInfo.lastname,
-          middleName: userInfo.middlename
-        },
-        {
-          where: {
-            id: userId
-          }
-        }
-      );
+      return await db.User.findAll({ where: { role: "manager" } });
     } catch (error) {
       return error.message;
     }
+  }
+
+  static async addManager(newManager) {
+    try {
+      return await db.User.create(newManager);
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async removeManager(id) {
+    try {
+      const manager = await this.findUser(id);
+      manager.destroy();
+      return manager;
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async generateAuthToken(userId) {
+    return jwt.sign({ id: userId }, process.env.JWT_KEY, { expiresIn: "1h" });
   }
 }
 

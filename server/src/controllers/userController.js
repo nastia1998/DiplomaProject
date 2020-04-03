@@ -1,40 +1,6 @@
 import userService from "../services/userService";
 
 class userController {
-  static async addManager(req, res) {
-    const { email } = req.body;
-    const manager = req.body;
-    manager.role = "manager";
-    manager.password = "Initial1";
-    if (!email) {
-      return res.json("Email is required");
-    }
-    try {
-      const createdManager = await userService.addManager(manager);
-      createdManager.password = undefined;
-      const managerData = { manager: createdManager };
-      return res.status(201).send({ managerData });
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
-  static async getManagers(req, res) {
-    try {
-      const managers = await userService.getManagers();
-      return res.status(200).send(managers);
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
-  static async removeManager(req, res) {
-    try {
-      const { manager_id } = req.params;
-      const remManager = await userService.removeManager(manager_id);
-      return res.send(remManager);
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
   static async addUser(req, res) {
     const { email, password } = req.body;
     const user = req.body;
@@ -53,12 +19,14 @@ class userController {
   }
 
   static async findByCredentials(req, res) {
+    console.log("here");
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).send("Email and password are required");
     }
     try {
       const user = await userService.findByCredentials(email, password);
+      console.log(user);
       user.firstName = undefined;
       user.lastName = undefined;
       user.middleName = undefined;
@@ -90,6 +58,42 @@ class userController {
       const updatedUser = await userService.findUser(user_id);
       updatedUser.password = undefined;
       return res.status(200).json(updatedUser);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+
+  // --------------------------------------- Managers Logic -------------------------------------------------
+  static async addManager(req, res) {
+    const { email } = req.body;
+    const manager = req.body;
+    manager.role = "manager";
+    manager.password = "Initial1";
+    if (!email) {
+      return res.json("Email is required");
+    }
+    try {
+      const createdManager = await userService.addManager(manager);
+      createdManager.password = undefined;
+      const managerData = { manager: createdManager };
+      return res.status(201).send({ managerData });
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+  static async getManagers(req, res) {
+    try {
+      const managers = await userService.getManagers();
+      return res.status(200).send(managers);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+  static async removeManager(req, res) {
+    try {
+      const { manager_id } = req.params;
+      const remManager = await userService.removeManager(manager_id);
+      return res.send(remManager);
     } catch (error) {
       return res.status(400).send(error.message);
     }

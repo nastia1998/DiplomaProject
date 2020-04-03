@@ -54,7 +54,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  User.associate = ({}) => {};
+  User.associate = ({ Mentor }) => {
+    User.hasMany(Mentor, { foreignKey: "user_id", onDelete: "cascade" });
+  };
   User.beforeCreate(async user => {
     try {
       user.password = await bcrypt.hash(user.password, 8);
