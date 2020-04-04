@@ -47,6 +47,16 @@ class mentorController {
       return res.status(400).send(error.message);
     }
   }
+
+  static async getMentorSkills(req, res) {
+    try {
+      const { mentor_id } = req.params;
+      const mentor = await mentorService.getMentorSkills(mentor_id);
+      return res.status(200).send(mentor);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
 }
 
 export default mentorController;

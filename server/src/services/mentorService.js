@@ -44,14 +44,18 @@ class MentorService {
     }
   }
 
-  static async findMentorwithInfo(id) {
+  static async getMentorSkills(id) {
     try {
-      return await db.Mentor.findByPk(id, {
+      const mentorWithUserInfo = await db.Mentor.findByPk(id, {
         include: [
           {
             model: db.User
           }
         ]
+      });
+      return await db.UserSkill.findAll({
+        where: { user_id: mentorWithUserInfo.id, approved: true },
+        include: [{ model: db.Skill }]
       });
     } catch (error) {
       return error.message;

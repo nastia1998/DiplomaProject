@@ -10,12 +10,17 @@ const {
   removeManager,
   findByCredentials,
   fetchUserProfile,
-  updateUserInfo
+  updateUserInfo,
+  getStudents,
+  addUserSkill,
+  approveUserSkill
 } = userController;
 
 const router = express.Router();
 
 router.post("/", addUser);
+router.post("/userskills/:userskillid", approveUserSkill);
+router.post("/userskills", addUserSkill);
 router.post(
   "/:role/manager",
   auth,
@@ -33,6 +38,12 @@ router.delete(
   auth,
   accessControl.grantAccess("deleteAny", "manager"),
   removeManager
+);
+router.get(
+  "/students/:role",
+  auth,
+  accessControl.grantAccess("readAny", "student"),
+  getStudents
 );
 router.post("/login", findByCredentials);
 router.get("/me", auth, fetchUserProfile);

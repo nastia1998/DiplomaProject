@@ -7,8 +7,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Skill.associate = ({ Level }) => {
+  Skill.associate = ({ Level, User, UserSkill }) => {
     Skill.belongsTo(Level, { foreignKey: "level_id" });
+    Skill.belongsToMany(User, { through: UserSkill, foreignKey: "skill_id" });
   };
   return Skill;
 };

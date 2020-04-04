@@ -9,10 +9,13 @@ import axios from "axios";
 
 import LevelsTable from "./LevelsTable";
 import SkillsTable from "./SkillsTable";
+import MentorsTable from "./MentorsTable";
 
 export default function Dashboard() {
   const [levelsList, setLevelsList] = useState([]);
   const [skillsList, setSkillsList] = useState([]);
+  const [mentorsList, setMentorsList] = useState([]);
+  const [studentsList, setStudentsList] = useState([]);
 
   async function fetchLevelsData() {
     const { data } = await axios.get(
@@ -38,13 +41,41 @@ export default function Dashboard() {
     setSkillsList(data);
   }
 
+  async function fetchMentorsData() {
+    const { data } = await axios.get(
+      "http://localhost:3000/api/v1/mentors/manager",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+    setMentorsList(data);
+  }
+
+  async function fetchStudentsData() {
+    const { data } = await axios.get(
+      "http://localhost:3000/api/v1/users/students/manager",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+    setStudentsList(data);
+  }
+
   useEffect(() => {
     fetchLevelsData();
     fetchSkillsData();
+    fetchMentorsData();
+    fetchStudentsData();
   }, []);
 
   const updateLevelsList = () => fetchLevelsData();
   const updateSkillsList = () => fetchSkillsData();
+  const updateMentorsList = () => fetchMentorsData();
+  const updateStudentsList = () => fetchStudentsData();
 
   return (
     <div style={styles.root}>
@@ -69,9 +100,13 @@ export default function Dashboard() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Paper style={(styles.paper, styles.fixedHeight)}>
-                {/* <Orders /> */}
-              </Paper>
+              <MentorsTable
+                mentorsList={mentorsList}
+                studentsList={studentsList}
+                setMentorsList={data => setMentorsList(data)}
+                updateMentorsList={() => updateMentorsList()}
+                updateStudentsList={() => updateStudentsList()}
+              />
             </Grid>
           </Grid>
         </Container>

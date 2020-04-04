@@ -54,8 +54,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  User.associate = ({ Mentor }) => {
+  User.associate = ({ Mentor, Skill, UserSkill }) => {
     User.hasMany(Mentor, { foreignKey: "user_id", onDelete: "cascade" });
+    User.belongsToMany(Skill, { through: UserSkill, foreignKey: "user_id" });
   };
   User.beforeCreate(async user => {
     try {

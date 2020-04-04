@@ -100,8 +100,42 @@ class UserService {
     }
   }
 
+  // --------------------------------------- Students Logic -------------------------------------------------
+  static async getStudents() {
+    try {
+      return await db.User.findAll({ where: { role: "student" } });
+    } catch (error) {
+      return error.message;
+    }
+  }
+
   static async generateAuthToken(userId) {
     return jwt.sign({ id: userId }, process.env.JWT_KEY, { expiresIn: "1h" });
+  }
+
+  static async addUserSkill(newUserSkill) {
+    try {
+      return await db.UserSkill.create(newUserSkill);
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async approveUserSkill(userSkillId) {
+    try {
+      return await db.UserSkill.update(
+        {
+          approved: true
+        },
+        {
+          where: {
+            id: userSkillId
+          }
+        }
+      );
+    } catch (error) {
+      return error.message;
+    }
   }
 }
 

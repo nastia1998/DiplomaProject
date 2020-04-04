@@ -98,6 +98,40 @@ class userController {
       return res.status(400).send(error.message);
     }
   }
+
+  // --------------------------------------- Students Logic -------------------------------------------------
+  static async getStudents(req, res) {
+    try {
+      const students = await userService.getStudents();
+      return res.status(200).send(students);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+
+  static async addUserSkill(req, res) {
+    try {
+      const { user_id, skill_id } = req.body;
+      if (!user_id || !skill_id) {
+        return res.json("IDs of user and skill are required!");
+      }
+      const newUserSkill = req.body;
+      const createdUserSkill = await userService.addUserSkill(newUserSkill);
+      return res.status(201).send({ createdUserSkill });
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+
+  static async approveUserSkill(req, res) {
+    try {
+      const { userskillid } = req.params;
+      const count = await userService.approveUserSkill(userskillid);
+      return res.status(200).send(count);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
 }
 
 export default userController;
