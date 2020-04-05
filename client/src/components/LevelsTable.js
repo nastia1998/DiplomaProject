@@ -38,7 +38,7 @@ const columns = [
   {
     id: "description",
     label: "Description",
-    minWidth: 170,
+    minWidth: 100,
     align: "center"
   }
 ];

@@ -1,6 +1,10 @@
 import db from "../models";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Sequelize from "sequelize";
+import _ from "lodash";
+
+const Op = Sequelize.Op;
 
 class UserService {
   static async addUser(newUser) {
@@ -104,6 +108,27 @@ class UserService {
   static async getStudents() {
     try {
       return await db.User.findAll({ where: { role: "student" } });
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async getPotentialMentors() {
+    try {
+      const potentialMentors = await db.UserSkill.findAll({
+        where: { approved: true, skill_id: { [Op.ne]: null } },
+        include: [
+          {
+            model: db.Skill,
+            where: { level_id: { [Op.ne]: null } },
+            include: [{ model: db.Level, where: { value: "senior" } }]
+          },
+          { model: db.User }
+        ]
+      });
+
+      const result = _.uniqBy(potentialMentors, "user_id");
+      return result;
     } catch (error) {
       return error.message;
     }

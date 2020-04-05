@@ -25,7 +25,12 @@ router.get(
   accessControl.grantAccess("readAny", "mentor"),
   getMentors
 );
-router.get("/:mentor_id/skills", getMentorSkills);
+router.get(
+  "/:mentor_id/skills/:role",
+  auth,
+  accessControl.grantAccess("readAny", "mentor"),
+  getMentorSkills
+);
 
 router.delete(
   "/:mentor_id/:role",

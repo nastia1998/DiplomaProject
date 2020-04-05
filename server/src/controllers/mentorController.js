@@ -51,6 +51,7 @@ class mentorController {
   static async getMentorSkills(req, res) {
     try {
       const { mentor_id } = req.params;
+      console.log(6876876, mentor_id);
       const mentor = await mentorService.getMentorSkills(mentor_id);
       return res.status(200).send(mentor);
     } catch (error) {

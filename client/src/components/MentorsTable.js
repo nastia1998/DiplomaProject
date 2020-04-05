@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { withStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import {
   TableContainer,
@@ -10,9 +11,14 @@ import {
   Toolbar,
   TableFooter,
   TablePagination,
-  NativeSelect
+  NativeSelect,
+  Dialog,
+  ListItem,
+  List
 } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import MuiDialogContent from "@material-ui/core/DialogContent";
+import CloseIcon from "@material-ui/icons/Close";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import IconButton from "@material-ui/core/IconButton";
 import FirstPageIcon from "@material-ui/icons/FirstPage";
@@ -35,7 +41,6 @@ import styles from "../styles/ManagerDashboard.css";
 const columns = [
   { id: "action", label: "Action", minWidth: 20, align: "center" },
   { id: "info", label: "Information", minWidth: 20, align: "center" },
-  { id: "skills", label: "Skills", minWidth: 20, align: "center" },
   { id: "status", label: "Status", minWidth: 20, align: "center" }
 ];
 
@@ -121,9 +126,48 @@ const useStyles2 = makeStyles({
     minWidth: 500
   }
 });
+
+const useStyles3 = theme => ({
+  root: {
+    margin: 0,
+    padding: theme.spacing(2)
+  },
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500]
+  }
+});
+
+const DialogTitle = withStyles(useStyles3)(props => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={onClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
+const DialogContent = withStyles(theme => ({
+  root: {
+    padding: theme.spacing(2)
+  }
+}))(MuiDialogContent);
+
 export default function MentorsTable(props) {
   const [isEdit, setIsEdit] = useState(false);
   const [studentVal, setStudentVal] = useState(0);
+
+  const [open, setOpen] = React.useState(false);
 
   const classes = useStyles2();
   const [page, setPage] = React.useState(0);
@@ -140,7 +184,7 @@ export default function MentorsTable(props) {
   const findIndex = (tableElement, row) => {
     let index = -1;
     for (let i = 1; i < tableElement.rows.length; i++) {
-      if (tableElement.rows[i].id == row.id) {
+      if (tableElement.rows[i].id === row.id) {
         index = i;
         break;
       }
@@ -157,7 +201,7 @@ export default function MentorsTable(props) {
       if (editRow.id === 0) {
         addMentor(studentVal);
       }
-      row.contentEditable = "false";
+      if (row) row.contentEditable = "false";
     } else {
       row.contentEditable = "true";
     }
@@ -210,9 +254,25 @@ export default function MentorsTable(props) {
     props.updateStudentsList();
   };
   const handleChangeStudent = event => {
-    console.log(studentVal);
+    console.log("change", event.target.value);
     setStudentVal(event.target.value);
   };
+
+  // ------------------------------------------------ Dialog handlers --------------------------------------------
+  const handleClickOpen = r => {
+    console.log(345, r);
+    if (!r.edit && r.id !== 0) {
+      console.log(12344444, !r.edit, r.id);
+      props.fetchMentorsSkillsData(r.id);
+      setOpen(true);
+    }
+  };
+
+  const handleClose = value => {
+    props.updateMentorsSkills();
+    setOpen(false);
+  };
+
   return (
     <Paper style={(styles.paper, styles.fixedHeight)}>
       <Toolbar>
@@ -251,8 +311,13 @@ export default function MentorsTable(props) {
                   page * rowsPerPage + rowsPerPage
                 )
               : props.mentorsList
-            ).map(row => (
-              <TableRow id={row.id} key={row.id} hover>
+            ).map((row, index) => (
+              <TableRow
+                id={row.id}
+                key={row.id}
+                hover
+                onClick={() => handleClickOpen(row)}
+              >
                 <TableCell id={row.id}>
                   <IconButton
                     hidden={!row.edit}
@@ -274,18 +339,19 @@ export default function MentorsTable(props) {
                   </IconButton>
                 </TableCell>
                 <TableCell align="center">
-                  {console.log(studentVal)}
                   {row.edit === true ? (
                     <NativeSelect
                       value={studentVal}
                       onChange={handleChangeStudent}
                     >
-                      {props.studentsList.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.email} {item.firstName} {item.lastName}{" "}
-                          {item.middleName}
-                        </option>
-                      ))}
+                      {props.studentsList.map
+                        ? props.studentsList.map(item => (
+                            <option key={item.User.id} value={item.User.id}>
+                              {item.User.email} {item.User.firstName}{" "}
+                              {item.User.lastName} {item.User.middleName}
+                            </option>
+                          ))
+                        : []}
                     </NativeSelect>
                   ) : (
                     row.User.email +
@@ -297,7 +363,6 @@ export default function MentorsTable(props) {
                     row.User.middleName
                   )}
                 </TableCell>
-                <TableCell align="center"></TableCell>
                 <TableCell align="center">{row.status}</TableCell>
               </TableRow>
             ))}
@@ -323,6 +388,20 @@ export default function MentorsTable(props) {
           </TableFooter>
         </Table>
       </TableContainer>
+      <Dialog
+        onClose={handleClose}
+        open={open}
+        aria-labelledby="simple-dialog-title"
+      >
+        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+          Skills
+        </DialogTitle>
+        <DialogContent dividers>
+          <List>
+            <ListItem>{props.mentorsSkills}</ListItem>
+          </List>
+        </DialogContent>
+      </Dialog>
     </Paper>
   );
 }

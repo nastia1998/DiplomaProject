@@ -13,7 +13,8 @@ const {
   updateUserInfo,
   getStudents,
   addUserSkill,
-  approveUserSkill
+  approveUserSkill,
+  getPotentialMentors
 } = userController;
 
 const router = express.Router();
@@ -44,6 +45,12 @@ router.get(
   auth,
   accessControl.grantAccess("readAny", "student"),
   getStudents
+);
+router.get(
+  "/potentialmentors/:role",
+  auth,
+  accessControl.grantAccess("readAny", "student"),
+  getPotentialMentors
 );
 router.post("/login", findByCredentials);
 router.get("/me", auth, fetchUserProfile);

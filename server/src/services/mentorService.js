@@ -1,4 +1,7 @@
 import db from "../models";
+import validator from "validator";
+import Sequelize from "sequelize";
+const Op = Sequelize.Op;
 
 class MentorService {
   // --------------------------------------- Mentors Logic -------------------------------------------------
@@ -13,6 +16,49 @@ class MentorService {
           }
         ]
       });
+      // let mentorsSkills = [];
+      // let mentor = {};
+      // console.log(mentors.length);
+      // //for (let i = 0; i < mentors.lenght; i++) {
+      // mentors.forEach(async i => {
+      //   // console.log(9999, i.id);
+      //   // mentor = await db.UserSkill.findAll({
+      //   //   where: { user_id: i.id, approved: true },
+      //   //   include: [{ model: db.Skill }]
+      //   // });
+      //   mentor = await this.getMentorSkills(i.id);
+      //   console.log(4444, mentor);
+      //   mentorsSkills.push(mentor);
+      //   console.log("here", mentorsSkills);
+      // });
+      // console.log(9999, mentors[i].id);
+      // let mentor = await db.UserSkill.findAll({
+      //   where: { user_id: mentors[i].id, approved: true },
+      //   include: [{ model: db.Skill }]
+      // });
+      // console.log(4444, mentor);
+      // mentorsSkills.push(mentor);
+      //}
+
+      // async function test() {
+      //   try {
+      //     mentors.forEach(async i => {
+      //       try {
+      //         mentor = await this.getMentorSkills(i.id);
+      //         mentorsSkills.push(mentor);
+      //       } catch (e) {
+      //         return error.message;
+      //       }
+      //     });
+      //     return mentorsSkills;
+      //   } catch (error) {
+      //     return error.message;
+      //   }
+      // }
+      // const a = await test();
+      // console.log("HERE", a);
+      // mentors.push(a);
+      // return mentors;
     } catch (error) {
       return error.message;
     }
@@ -43,7 +89,15 @@ class MentorService {
       return error.message;
     }
   }
-
+  static async findMentorwithInfo(id) {
+    try {
+      return await db.Mentor.findByPk(id, {
+        include: [{ model: db.User }]
+      });
+    } catch (error) {
+      return error.message;
+    }
+  }
   static async getMentorSkills(id) {
     try {
       const mentorWithUserInfo = await db.Mentor.findByPk(id, {
@@ -54,9 +108,26 @@ class MentorService {
         ]
       });
       return await db.UserSkill.findAll({
-        where: { user_id: mentorWithUserInfo.id, approved: true },
-        include: [{ model: db.Skill }]
+        attributes: [],
+        where: {
+          user_id: mentorWithUserInfo.User.id,
+          approved: true,
+          skill_id: { [Op.ne]: null }
+        },
+        include: [
+          {
+            model: db.Skill,
+            where: { level_id: { [Op.ne]: null } },
+            include: [
+              { model: db.Level, where: { value: "senior" }, attributes: [] }
+            ]
+          }
+        ]
       });
+      // return await db.UserSkill.findAll({
+      //   where: { user_id: mentorWithUserInfo.id, approved: true },
+      //   include: [{ model: db.Skill }]
+      // });
     } catch (error) {
       return error.message;
     }

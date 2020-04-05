@@ -9,7 +9,7 @@ class userController {
     }
     try {
       const createdUser = await userService.addUser(user);
-      console.log(createdUser);
+
       createdUser.password = undefined;
       const userData = { user: createdUser };
       return res.status(201).send({ userData });
@@ -19,14 +19,13 @@ class userController {
   }
 
   static async findByCredentials(req, res) {
-    console.log("here");
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).send("Email and password are required");
     }
     try {
       const user = await userService.findByCredentials(email, password);
-      console.log(user);
+
       user.firstName = undefined;
       user.lastName = undefined;
       user.middleName = undefined;
@@ -104,6 +103,15 @@ class userController {
     try {
       const students = await userService.getStudents();
       return res.status(200).send(students);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+
+  static async getPotentialMentors(req, res) {
+    try {
+      const potentialMentors = await userService.getPotentialMentors();
+      return res.status(200).send(potentialMentors);
     } catch (error) {
       return res.status(400).send(error.message);
     }

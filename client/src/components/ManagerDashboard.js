@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 
 import styles from "../styles/ManagerDashboard.css";
 import axios from "axios";
@@ -15,6 +14,7 @@ export default function Dashboard() {
   const [levelsList, setLevelsList] = useState([]);
   const [skillsList, setSkillsList] = useState([]);
   const [mentorsList, setMentorsList] = useState([]);
+  const [mentorsSkills, setMentorsSkills] = useState([]);
   const [studentsList, setStudentsList] = useState([]);
 
   async function fetchLevelsData() {
@@ -53,9 +53,28 @@ export default function Dashboard() {
     setMentorsList(data);
   }
 
+  async function fetchMentorsSkillsData(id) {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/v1/mentors/${id}/skills/manager`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      }
+    );
+
+    let b = [];
+    Object.values(data).map((i, index) => {
+      Object.values(i).map(u => {
+        b.push(u.name + " ");
+      });
+    });
+    setMentorsSkills([b, ...mentorsSkills]);
+  }
+
   async function fetchStudentsData() {
     const { data } = await axios.get(
-      "http://localhost:3000/api/v1/users/students/manager",
+      "http://localhost:3000/api/v1/users/potentialmentors/manager",
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -63,6 +82,9 @@ export default function Dashboard() {
       }
     );
     setStudentsList(data);
+  }
+  async function resetMentorsSkills() {
+    setMentorsSkills([]);
   }
 
   useEffect(() => {
@@ -76,6 +98,7 @@ export default function Dashboard() {
   const updateSkillsList = () => fetchSkillsData();
   const updateMentorsList = () => fetchMentorsData();
   const updateStudentsList = () => fetchStudentsData();
+  const updateMentorsSkills = () => resetMentorsSkills();
 
   return (
     <div style={styles.root}>
@@ -103,9 +126,12 @@ export default function Dashboard() {
               <MentorsTable
                 mentorsList={mentorsList}
                 studentsList={studentsList}
+                mentorsSkills={mentorsSkills}
                 setMentorsList={data => setMentorsList(data)}
                 updateMentorsList={() => updateMentorsList()}
                 updateStudentsList={() => updateStudentsList()}
+                fetchMentorsSkillsData={fetchMentorsSkillsData}
+                updateMentorsSkills={() => updateMentorsSkills()}
               />
             </Grid>
           </Grid>

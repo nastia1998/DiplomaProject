@@ -71,7 +71,7 @@ export default function SignUp() {
         if (data.userData) history.push("/signin");
       } catch (e) {
         console.log(e.message);
-        if (e.response.status == "400") {
+        if (e.response.status === "400") {
           alert(e);
         }
         return e.message;
