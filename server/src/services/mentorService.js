@@ -89,6 +89,15 @@ class MentorService {
       return error.message;
     }
   }
+
+  static async findMentorByUserId(userId) {
+    try {
+      return await db.Mentor.findAll({ where: { user_id: userId } });
+    } catch (error) {
+      return error.message;
+    }
+  }
+
   static async findMentorwithInfo(id) {
     try {
       return await db.Mentor.findByPk(id, {

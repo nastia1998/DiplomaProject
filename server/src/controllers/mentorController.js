@@ -9,19 +9,24 @@ class mentorController {
       if (!user_id) {
         return res.json("Identifier of user should be set");
       }
-      const user = await userService.findUser(user_id);
-      user.password = undefined;
-      if (user) {
-        await userService.updateRole(user.id, "mentor");
-        const mentor = await mentorService.addMentor(req.body);
-        const createdMentorInfo = await mentorService.findMentorwithInfo(
-          mentor.id
-        );
-        createdMentorInfo.User.password = undefined;
-        const mentorData = { mentor: createdMentorInfo };
-        return res.status(201).send({ mentorData });
+      const mentorExist = await mentorService.findMentorByUserId(user_id);
+      if (!mentorExist) {
+        const user = await userService.findUser(user_id);
+        user.password = undefined;
+        if (user) {
+          await userService.updateRole(user.id, "mentor");
+          const mentor = await mentorService.addMentor(req.body);
+          const createdMentorInfo = await mentorService.findMentorwithInfo(
+            mentor.id
+          );
+          createdMentorInfo.User.password = undefined;
+          const mentorData = { mentor: createdMentorInfo };
+          return res.status(201).send({ mentorData });
+        } else {
+          return res.json("No user with such id!");
+        }
       } else {
-        return res.json("No user with such id!");
+        return res.json("Mentor already exists!");
       }
     } catch (error) {
       return res.status(400).send(error.message);
