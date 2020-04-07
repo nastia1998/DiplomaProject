@@ -6,28 +6,14 @@ import Grid from "@material-ui/core/Grid";
 import styles from "../styles/ManagerDashboard.css";
 import axios from "axios";
 
-import LevelsTable from "./LevelsTable";
 import SkillsTable from "./SkillsTable";
 import MentorsTable from "./MentorsTable";
 
 export default function Dashboard() {
-  const [levelsList, setLevelsList] = useState([]);
   const [skillsList, setSkillsList] = useState([]);
   const [mentorsList, setMentorsList] = useState([]);
   const [mentorsSkills, setMentorsSkills] = useState([]);
   const [studentsList, setStudentsList] = useState([]);
-
-  async function fetchLevelsData() {
-    const { data } = await axios.get(
-      "http://localhost:3000/api/v1/levels/manager",
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      }
-    );
-    setLevelsList(data);
-  }
 
   async function fetchSkillsData() {
     const { data } = await axios.get(
@@ -66,7 +52,7 @@ export default function Dashboard() {
     let b = [];
     Object.values(data).map((i, index) => {
       Object.values(i).map(u => {
-        b.push(u.name + " ");
+        b.push(`${index + 1}: ${u.name} `);
       });
     });
     setMentorsSkills([b, ...mentorsSkills]);
@@ -88,13 +74,11 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    fetchLevelsData();
     fetchSkillsData();
     fetchMentorsData();
     fetchStudentsData();
   }, []);
 
-  const updateLevelsList = () => fetchLevelsData();
   const updateSkillsList = () => fetchSkillsData();
   const updateMentorsList = () => fetchMentorsData();
   const updateStudentsList = () => fetchStudentsData();
@@ -106,23 +90,14 @@ export default function Dashboard() {
       <main style={styles.content}>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={6}>
-              <LevelsTable
-                levelsList={levelsList}
-                updateLevelsList={() => updateLevelsList()}
-                updateSkillsList={() => updateSkillsList()}
-                setLevelsList={data => setLevelsList(data)}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} lg={6}>
+            <Grid item xs={12} md={12} lg={6}>
               <SkillsTable
                 skillsList={skillsList}
-                levelsList={levelsList}
                 updateSkillsList={() => updateSkillsList()}
                 setSkillsList={data => setSkillsList(data)}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={12} lg={6}>
               <MentorsTable
                 mentorsList={mentorsList}
                 studentsList={studentsList}
