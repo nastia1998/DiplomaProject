@@ -21,7 +21,7 @@ app.use(async (req, res, next) => {
     // Check if token has expired
     if (exp < Date.now().valueOf() / 1000) {
       return res.status(401).json({
-        error: "JWT token has expired, please login to obtain a new one"
+        error: "JWT token has expired, please login to obtain a new one",
       });
     }
     next();
@@ -31,7 +31,6 @@ app.use(async (req, res, next) => {
 });
 
 app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/levels", levelRoutes);
 app.use("/api/v1/skills", skillRoutes);
 app.use("/api/v1/mentors", mentorRoutes);
 

@@ -13,7 +13,7 @@ export default {
   },
   container: {
     paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
+    paddingBottom: theme.spacing(1)
   },
   paper: {
     padding: theme.spacing(2),
@@ -22,6 +22,6 @@ export default {
     flexDirection: "column"
   },
   fixedHeight: {
-    height: 271
+    height: 571
   }
 };

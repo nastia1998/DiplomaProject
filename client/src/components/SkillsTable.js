@@ -33,9 +33,17 @@ import axios from "axios";
 import styles from "../styles/ManagerDashboard.css";
 
 const columns = [
-  { id: "action", label: "Action", minWidth: 10, align: "left" },
+  { id: "action", label: "Action", minWidth: 10, align: "center" },
   { id: "name", label: "Name", minWidth: 10, align: "center" },
-  { id: "level", label: "Level", minWidth: 20, align: "center" }
+  { id: "level", label: "Level name", minWidth: 15, align: "center" },
+  { id: "time", label: "Time for level", minWidth: 10, align: "center" },
+  { id: "description", label: "Description", minWidth: 20, align: "center" }
+];
+
+const options = [
+  { id: 1, label: "junior" },
+  { id: 2, label: "middle" },
+  { id: 3, label: "senior" }
 ];
 
 const useStyles1 = makeStyles(theme => ({
@@ -122,11 +130,11 @@ const useStyles2 = makeStyles({
 });
 export default function SkillsTable(props) {
   const [isEdit, setIsEdit] = useState(false);
-  const [levelVal, setLevelVal] = useState(0);
+  const [levelName, setLevelName] = useState(options[0].label);
 
   const classes = useStyles2();
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(2);
+  const [rowsPerPage, setRowsPerPage] = React.useState(7);
 
   const emptyRows =
     rowsPerPage -
@@ -155,9 +163,20 @@ export default function SkillsTable(props) {
 
     if (editRow.edit) {
       if (editRow.id === 0) {
-        addSkill(row.cells[1].innerHTML, levelVal);
+        addSkill(
+          row.cells[1].innerHTML,
+          levelName,
+          row.cells[3].innerHTML,
+          row.cells[4].innerHTML
+        );
       } else {
-        updateSkillInfo(editRow.id, row.cells[1].innerHTML, levelVal);
+        updateSkillInfo(
+          editRow.id,
+          row.cells[1].innerHTML,
+          levelName,
+          row.cells[3].innerHTML,
+          row.cells[4].innerHTML
+        );
       }
       row.contentEditable = "false";
     } else {
@@ -167,10 +186,12 @@ export default function SkillsTable(props) {
     setIsEdit(editRow.edit);
   };
 
-  const addSkill = async (n, l) => {
+  const addSkill = async (n, l, t, d) => {
     const body = {
       name: n,
-      level_id: l
+      level_name: l,
+      time_level: t,
+      description: d
     };
     const { data } = await axios.post(
       "http://localhost:3000/api/v1/skills/manager",
@@ -185,10 +206,11 @@ export default function SkillsTable(props) {
       props.updateSkillsList();
     }
   };
-  const updateSkillInfo = async (skill_id, v, lvl_id) => {
+  const updateSkillInfo = async (skill_id, n, l, t) => {
     const body = {
-      name: v,
-      level_id: parseInt(lvl_id)
+      name: n,
+      level_name: l,
+      time_level: parseInt(t)
     };
     console.log(body);
     const { data } = await axios.put(
@@ -229,7 +251,7 @@ export default function SkillsTable(props) {
   };
 
   const handleChangeLevel = event => {
-    setLevelVal(event.target.value);
+    setLevelName(event.target.value);
   };
 
   return (
@@ -306,17 +328,22 @@ export default function SkillsTable(props) {
                 <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">
                   {row.edit === true ? (
-                    <NativeSelect value={levelVal} onChange={handleChangeLevel}>
-                      {props.levelsList.map(item => (
-                        <option key={item.id} value={item.id}>
-                          {item.value} {item.time_level}
+                    <NativeSelect
+                      value={levelName}
+                      onChange={handleChangeLevel}
+                    >
+                      {options.map(item => (
+                        <option key={item.id} value={item.label}>
+                          {item.label}
                         </option>
                       ))}
                     </NativeSelect>
-                  ) : row.Level ? (
-                    row.Level.value + " " + row.Level.time_level
-                  ) : null}
+                  ) : (
+                    row.level_name
+                  )}
                 </TableCell>
+                <TableCell align="center">{row.time_level}</TableCell>
+                <TableCell align="center">{row.description}</TableCell>
               </TableRow>
             ))}
             {emptyRows > 0 && (
@@ -329,7 +356,6 @@ export default function SkillsTable(props) {
             <TableRow>
               <TablePagination
                 labelRowsPerPage=""
-                // rowsPerPageOptions={{ paging: false }}
                 rowsPerPageOptions=""
                 count={props.skillsList.length}
                 rowsPerPage={rowsPerPage}

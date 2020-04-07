@@ -10,7 +10,8 @@ class mentorController {
         return res.json("Identifier of user should be set");
       }
       const mentorExist = await mentorService.findMentorByUserId(user_id);
-      if (!mentorExist) {
+      console.log(mentorExist);
+      if (mentorExist.length === 0) {
         const user = await userService.findUser(user_id);
         user.password = undefined;
         if (user) {
@@ -56,7 +57,6 @@ class mentorController {
   static async getMentorSkills(req, res) {
     try {
       const { mentor_id } = req.params;
-      console.log(6876876, mentor_id);
       const mentor = await mentorService.getMentorSkills(mentor_id);
       return res.status(200).send(mentor);
     } catch (error) {
