@@ -3,7 +3,13 @@ import auth from "../middleware/auth";
 import skillController from "../controllers/skillController";
 import accessControl from "../middleware/accessControl";
 
-const { addSkill, getSkills, updateSkillInfo, removeSkill } = skillController;
+const {
+  addSkill,
+  getSkills,
+  updateSkillInfo,
+  removeSkill,
+  getSkillsForUser
+} = skillController;
 
 const router = express.Router();
 
@@ -19,6 +25,13 @@ router.get(
   auth,
   accessControl.grantAccess("readAny", "skill"),
   getSkills
+);
+
+router.get(
+  "/:user_id/:role",
+  // auth,
+  // accessControl.grantAccess("readAny", "skill"),
+  getSkillsForUser
 );
 
 router.put(

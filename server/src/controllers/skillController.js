@@ -2,11 +2,12 @@ import skillService from "../services/skillService";
 
 class skillController {
   static async addSkill(req, res) {
-    const { name, level_id } = req.body;
-    if (!name) return res.json("Name for skill is required!");
+    const { name, level_name, time_level } = req.body;
+    if (!name || !level_name || !time_level)
+      return res.json("Required fields are empty!");
     const newSkill = req.body;
     try {
-      const createdSkill = await skillService.addSkill(newSkill, level_id);
+      const createdSkill = await skillService.addSkill(newSkill);
       return res.status(201).send({ createdSkill });
     } catch (error) {
       return res.status(400).send(error.message);
@@ -17,6 +18,16 @@ class skillController {
     try {
       const skills = await skillService.getSkills();
       return res.status(200).send(skills);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+
+  static async getSkillsForUser(req, res) {
+    try {
+      const { user_id } = req.params;
+      const availableSkills = await skillService.getSkillsForUser(user_id);
+      return res.status(200).send(availableSkills);
     } catch (error) {
       return res.status(400).send(error.message);
     }

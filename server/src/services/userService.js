@@ -120,8 +120,7 @@ class UserService {
         include: [
           {
             model: db.Skill,
-            where: { level_id: { [Op.ne]: null } },
-            include: [{ model: db.Level, where: { value: "senior" } }]
+            where: { level_name: "senior" }
           },
           { model: db.User }
         ]
@@ -158,6 +157,29 @@ class UserService {
           }
         }
       );
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async getUserSkillsByUserId(userId) {
+    try {
+      return await db.UserSkill.findAll({
+        where: { user_id: userId },
+        attributes: [],
+        include: [
+          {
+            model: db.Skill,
+            attributes: [
+              "id",
+              "name",
+              "level_name",
+              "time_level",
+              "description"
+            ]
+          }
+        ]
+      });
     } catch (error) {
       return error.message;
     }

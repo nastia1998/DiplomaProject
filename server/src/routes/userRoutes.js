@@ -14,7 +14,8 @@ const {
   getStudents,
   addUserSkill,
   approveUserSkill,
-  getPotentialMentors
+  getPotentialMentors,
+  getUserSkillsByUserId
 } = userController;
 
 const router = express.Router();
@@ -22,6 +23,7 @@ const router = express.Router();
 router.post("/", addUser);
 router.post("/userskills/:userskillid", approveUserSkill);
 router.post("/userskills", addUserSkill);
+router.get("/:user_id/userskills", getUserSkillsByUserId);
 router.post(
   "/:role/manager",
   auth,

@@ -126,10 +126,7 @@ class MentorService {
         include: [
           {
             model: db.Skill,
-            where: { level_id: { [Op.ne]: null } },
-            include: [
-              { model: db.Level, where: { value: "senior" }, attributes: [] }
-            ]
+            where: { level_name: "senior" }
           }
         ]
       });

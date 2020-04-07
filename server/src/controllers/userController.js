@@ -140,6 +140,16 @@ class userController {
       return res.status(400).send(error.message);
     }
   }
+
+  static async getUserSkillsByUserId(req, res) {
+    try {
+      const { user_id } = req.params;
+      const skills = await userService.getUserSkillsByUserId(user_id);
+      return res.status(200).send(skills);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
 }
 
 export default userController;
