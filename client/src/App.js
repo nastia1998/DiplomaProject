@@ -6,6 +6,7 @@ import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import Profile from "./components/Profile";
 import ManagerDashboard from "./components/ManagerDashboard";
+import StudentDashboard from "./components/StudentDashboard";
 
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
@@ -43,17 +44,23 @@ export default function App() {
           )}
         />
         <Route name="signup" exact path="/signup" component={SignUp} />
-        <Route
+        {/* <Route
           name="profile"
           exact
           path="/profile"
           render={props => <Profile {...props} isLogin={isLogin} />}
-        />
+        /> */}
         <Route
           name="managerdashboard"
           exact
           path="/managerdashboard"
           component={ManagerDashboard}
+        />
+        <Route
+          name="studentdashboard"
+          exact
+          path="/studentdashboard"
+          component={StudentDashboard}
         />
       </Router>
       <Box pt={4}>

@@ -4,7 +4,8 @@ const ac = new AccessControl();
 exports.roles = (function() {
   ac.grant("student")
     .readOwn("profile")
-    .updateOwn("profile");
+    .updateOwn("profile")
+    .readAny("skill");
 
   ac.grant("mentor")
     .extend("student")

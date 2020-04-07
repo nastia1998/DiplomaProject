@@ -49,6 +49,7 @@ export default function SignIn(props) {
         props.handleLogin();
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.user.role);
+        localStorage.setItem("userId", data.user.id);
         switch (localStorage.getItem("role")) {
           case "manager":
             history.push("/managerdashboard");
@@ -56,6 +57,7 @@ export default function SignIn(props) {
           case "mentor":
             break;
           case "student":
+            history.push("/studentdashboard");
             break;
           case "admin":
             break;
