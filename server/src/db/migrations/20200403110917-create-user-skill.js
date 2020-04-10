@@ -9,7 +9,10 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        approved: {
+        is_approved_request: {
+          type: Sequelize.BOOLEAN,
+        },
+        is_approved_skill: {
           type: Sequelize.BOOLEAN,
         },
         createdAt: {
@@ -33,15 +36,27 @@ module.exports = {
             onDelete: "SET NULL",
           })
           .then(() => {
-            return queryInterface.addColumn("UserSkills", "skill_id", {
-              type: Sequelize.INTEGER,
-              references: {
-                model: "Skills",
-                key: "id",
-              },
-              onUpdate: "CASCADE",
-              onDelete: "SET NULL",
-            });
+            return queryInterface
+              .addColumn("UserSkills", "skill_id", {
+                type: Sequelize.INTEGER,
+                references: {
+                  model: "Skills",
+                  key: "id",
+                },
+                onUpdate: "CASCADE",
+                onDelete: "SET NULL",
+              })
+              .then(() => {
+                return queryInterface.addColumn("UserSkills", "mentor_id", {
+                  type: Sequelize.INTEGER,
+                  references: {
+                    model: "Mentors",
+                    key: "id",
+                  },
+                  onUpdate: "CASCADE",
+                  onDelete: "SET NULL",
+                });
+              });
           });
       });
   },
