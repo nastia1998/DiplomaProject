@@ -23,10 +23,12 @@ class skillController {
     }
   }
 
-  static async getSkillsForUser(req, res) {
+  static async getAvailableSkillsForUser(req, res) {
     try {
       const { user_id } = req.params;
-      const availableSkills = await skillService.getSkillsForUser(user_id);
+      const availableSkills = await skillService.getAvailableSkillsForUser(
+        user_id
+      );
       return res.status(200).send(availableSkills);
     } catch (error) {
       return res.status(400).send(error.message);

@@ -12,12 +12,13 @@ export default function Dashboard() {
   const [studentInfo, setStudentInfo] = useState([]);
   const [studentSkills, setStundentSkills] = useState([]);
   const [availableSkills, setAvailableSkills] = useState([]);
+  const [mentorsList, setMentorsList] = useState([]);
 
   async function fetchStudentInfo() {
     const { data } = await axios.get("http://localhost:3000/api/v1/users/me", {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
     setStudentInfo(data);
   }
@@ -28,12 +29,13 @@ export default function Dashboard() {
         "userId"
       )}/userskills`
     );
-    const res = [];
-    Object.values(data).map(i => {
-      const t = Object.values(i); //Skill[i]
-      res.push(t[0]);
-    });
-    setStundentSkills(res);
+    // const res = [];
+    // Object.values(data).map((i) => {
+    //   const t = Object.values(i); //Skill[i]
+    //   res.push(t[0]);
+    // });
+    // setStundentSkills(res);
+    setStundentSkills(data);
   }
 
   async function fetchAvailableSkills() {
@@ -43,6 +45,23 @@ export default function Dashboard() {
       )}/student`
     );
     setAvailableSkills(data);
+  }
+
+  async function fetchMentorsForSkill(skill_id) {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/v1/mentors/${skill_id}/student`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setMentorsList(data);
+    console.log(data);
+  }
+
+  async function clearMentorsList() {
+    setMentorsList([]);
   }
 
   useEffect(() => {
@@ -64,6 +83,9 @@ export default function Dashboard() {
                 studentInfo={studentInfo}
                 studentSkills={studentSkills}
                 availableSkills={availableSkills}
+                fetchMentorsForSkill={fetchMentorsForSkill}
+                clearMentorsList={clearMentorsList}
+                mentorsList={mentorsList}
               />
             </Grid>
             <Grid item xs={12} md={6} lg={2}>

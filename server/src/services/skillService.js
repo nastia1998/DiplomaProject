@@ -1,5 +1,4 @@
 import db from "../models";
-import levelService from "./levelService";
 import { QueryTypes } from "sequelize";
 
 class SkillService {
@@ -14,17 +13,24 @@ class SkillService {
   static async getSkills() {
     try {
       return await db.Skill.findAll({
-        order: ["id"]
+        order: ["id"],
       });
     } catch (error) {
       return error.message;
     }
   }
 
-  static async getSkillsForUser(userId) {
+  static async getAvailableSkillsForUser(userId) {
     try {
       return await db.sequelize.query(
-        'SELECT * FROM "Skills" WHERE id NOT IN (SELECT skill_id from "UserSkills" WHERE user_id = :id)',
+        // 'SELECT * FROM "Skills" WHERE id NOT IN (SELECT skill_id from "UserSkills" WHERE user_id = :id)',
+        "select distinct on (s.name) s.name, s.level_name, s.id, s.time_level, s.description " +
+          'from "UserSkills" as us ' +
+          'join "Skills" as s on us.skill_id = s.id ' +
+          'join "Users" as u on us.user_id = u.id ' +
+          'join "Mentors" as me on u.id = me.user_id ' +
+          'where s.id not in (SELECT skill_id from "UserSkills" WHERE user_id = :id) ' +
+          "order by s.name, s.level_name",
         { replacements: { id: userId }, type: QueryTypes.SELECT }
       );
     } catch (error) {
@@ -50,20 +56,6 @@ class SkillService {
     }
   }
 
-  // static async getSkillByLevel(level_id) {
-  //   try {
-  //     return await db.Skill.findAll({
-  //       where: {
-  //         level_id
-  //       },
-  //       include: {
-  //         model: db.Level,
-  //         attributes: ["id", "value", "time_level"]
-  //       }
-  //     });
-  //   }
-  // }
-
   static async updateSkillInfo(skillInfo, skillId) {
     try {
       return await db.Skill.update(
@@ -71,12 +63,12 @@ class SkillService {
           name: skillInfo.name,
           level_name: skillInfo.level_name,
           time_level: skillInfo.time_level,
-          description: skillInfo.description
+          description: skillInfo.description,
         },
         {
           where: {
-            id: skillId
-          }
+            id: skillId,
+          },
         }
       );
     } catch (error) {

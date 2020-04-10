@@ -3,7 +3,6 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
-import levelRoutes from "./routes/levelRoutes";
 import skillRoutes from "./routes/skillRoutes";
 import mentorRoutes from "./routes/mentorRoutes";
 

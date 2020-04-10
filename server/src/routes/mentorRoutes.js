@@ -7,7 +7,8 @@ const {
   addMentor,
   getMentors,
   removeMentor,
-  getMentorSkills
+  getMentorSkills,
+  getMentorsBySkillId,
 } = mentorController;
 
 const router = express.Router();
@@ -25,11 +26,19 @@ router.get(
   accessControl.grantAccess("readAny", "mentor"),
   getMentors
 );
+
 router.get(
   "/:mentor_id/skills/:role",
   auth,
   accessControl.grantAccess("readAny", "mentor"),
   getMentorSkills
+);
+
+router.get(
+  "/:skill_id/:role",
+  auth,
+  accessControl.grantAccess("readAny", "mentor"),
+  getMentorsBySkillId
 );
 
 router.delete(

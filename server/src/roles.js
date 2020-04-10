@@ -1,15 +1,14 @@
 import AccessControl from "accesscontrol";
 const ac = new AccessControl();
 
-exports.roles = (function() {
+exports.roles = (function () {
   ac.grant("student")
     .readOwn("profile")
     .updateOwn("profile")
-    .readAny("skill");
+    .readAny("skill")
+    .readAny("mentor");
 
-  ac.grant("mentor")
-    .extend("student")
-    .readOwn("request");
+  ac.grant("mentor").extend("student").readOwn("request");
 
   ac.grant("manager")
     .createOwn("mentor")

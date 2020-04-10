@@ -4,24 +4,24 @@ const theme = createMuiTheme();
 
 export default {
   root: {
-    display: "flex"
+    display: "flex",
   },
   content: {
     flexGrow: 1,
     height: "83vh",
-    overflow: "auto"
+    overflow: "auto",
   },
   container: {
     paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2)
+    paddingBottom: theme.spacing(2),
   },
   paper: {
     padding: theme.spacing(2),
     display: "flex",
     overflow: "auto",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   fixedHeight: {
-    height: 567
-  }
+    height: 567,
+  },
 };

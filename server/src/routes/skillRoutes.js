@@ -8,7 +8,7 @@ const {
   getSkills,
   updateSkillInfo,
   removeSkill,
-  getSkillsForUser
+  getAvailableSkillsForUser,
 } = skillController;
 
 const router = express.Router();
@@ -31,7 +31,7 @@ router.get(
   "/:user_id/:role",
   // auth,
   // accessControl.grantAccess("readAny", "skill"),
-  getSkillsForUser
+  getAvailableSkillsForUser
 );
 
 router.put(

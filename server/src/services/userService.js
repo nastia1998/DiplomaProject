@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Sequelize from "sequelize";
 import _ from "lodash";
+import { QueryTypes } from "sequelize";
 
 const Op = Sequelize.Op;
 
@@ -21,12 +22,12 @@ class UserService {
         {
           firstName: userInfo.firstname,
           lastName: userInfo.lastname,
-          middleName: userInfo.middlename
+          middleName: userInfo.middlename,
         },
         {
           where: {
-            id: userId
-          }
+            id: userId,
+          },
         }
       );
     } catch (error) {
@@ -38,12 +39,12 @@ class UserService {
     try {
       return await db.User.update(
         {
-          role: newRole
+          role: newRole,
         },
         {
           where: {
-            id: userId
-          }
+            id: userId,
+          },
         }
       );
     } catch (error) {
@@ -120,10 +121,10 @@ class UserService {
         include: [
           {
             model: db.Skill,
-            where: { level_name: "senior" }
+            where: { level_name: "senior" },
           },
-          { model: db.User }
-        ]
+          { model: db.User },
+        ],
       });
 
       const result = _.uniqBy(potentialMentors, "user_id");
@@ -149,12 +150,12 @@ class UserService {
     try {
       return await db.UserSkill.update(
         {
-          approved: true
+          approved: true,
         },
         {
           where: {
-            id: userSkillId
-          }
+            id: userSkillId,
+          },
         }
       );
     } catch (error) {
@@ -164,22 +165,30 @@ class UserService {
 
   static async getUserSkillsByUserId(userId) {
     try {
-      return await db.UserSkill.findAll({
-        where: { user_id: userId },
-        attributes: [],
-        include: [
-          {
-            model: db.Skill,
-            attributes: [
-              "id",
-              "name",
-              "level_name",
-              "time_level",
-              "description"
-            ]
-          }
-        ]
-      });
+      // return await db.UserSkill.findAll({
+      //   where: { user_id: userId },
+      //   attributes: [],
+      //   include: [
+      //     {
+      //       model: db.Skill,
+      //       attributes: [
+      //         "id",
+      //         "name",
+      //         "level_name",
+      //         "time_level",
+      //         "description"
+      //       ]
+      //     }
+      //   ]
+      // });
+      return await db.sequelize.query(
+        "select distinct on (s.name) s.name, s.level_name, s.time_level, s.description, us.approved " +
+          'from "UserSkills" as us ' +
+          'join "Skills" as s on us.skill_id = s.id ' +
+          "where us.user_id = :id " +
+          "order by s.name, s.level_name desc",
+        { replacements: { id: userId }, type: QueryTypes.SELECT }
+      );
     } catch (error) {
       return error.message;
     }

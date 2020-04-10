@@ -7,19 +7,19 @@ module.exports = {
           allowNull: false,
           autoIncrement: true,
           primaryKey: true,
-          type: Sequelize.INTEGER
+          type: Sequelize.INTEGER,
         },
         approved: {
-          type: Sequelize.BOOLEAN
+          type: Sequelize.BOOLEAN,
         },
         createdAt: {
           allowNull: false,
-          type: Sequelize.DATE
+          type: Sequelize.DATE,
         },
         updatedAt: {
           allowNull: false,
-          type: Sequelize.DATE
-        }
+          type: Sequelize.DATE,
+        },
       })
       .then(() => {
         return queryInterface
@@ -27,21 +27,25 @@ module.exports = {
             type: Sequelize.INTEGER,
             references: {
               model: "Users",
-              key: "id"
-            }
+              key: "id",
+            },
+            onUpdate: "CASCADE",
+            onDelete: "SET NULL",
           })
           .then(() => {
             return queryInterface.addColumn("UserSkills", "skill_id", {
               type: Sequelize.INTEGER,
               references: {
                 model: "Skills",
-                key: "id"
-              }
+                key: "id",
+              },
+              onUpdate: "CASCADE",
+              onDelete: "SET NULL",
             });
           });
       });
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable("UserSkills");
-  }
+  },
 };

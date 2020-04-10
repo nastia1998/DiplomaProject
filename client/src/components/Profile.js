@@ -1,5 +1,20 @@
 import React, { useState } from "react";
-import { Paper, Grid, GridList, GridListTile, List } from "@material-ui/core";
+import {
+  Paper,
+  Grid,
+  GridList,
+  GridListTile,
+  List,
+  ListItem,
+  IconButton,
+  Button,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Typography,
+  Divider,
+} from "@material-ui/core";
+import ArrowForwardIosOutlinedIcon from "@material-ui/icons/ArrowForwardIosOutlined";
 import Rating from "@material-ui/lab/Rating";
 
 import styles from "../styles/StudentDashboard.css";
@@ -30,42 +45,62 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "100%",
     overflow: "auto",
   },
+  mentorslist: {
+    width: "100%",
+    maxWidth: "36ch",
+    backgroundColor: theme.palette.background.paper,
+  },
+  container: {
+    overflow: "auto",
+    height: 567,
+  },
 }));
 
 const StyledRating = withStyles({
   iconFilled: {
     color: "#2B924A",
   },
-  iconHover: {
-    color: "#2B924A",
-  },
 })(Rating);
 
 export default function Profile(props) {
-  const [mentors, setMentors] = useState(true);
+  const [mentors, setMentors] = useState(false);
+  const [selSkill, setSelSkill] = useState(0);
 
   const classes = useStyles();
 
   const handleShowMentors = (e) => {
-    alert("Handle show mentors " + e.target.id);
+    props.fetchMentorsForSkill(e.target.id);
+    setSelSkill(Number(e.target.id));
+    const mentorsOptions = document.getElementsByClassName("mentor");
+    for (let i = 0; i < mentorsOptions.length; i++) {
+      if (
+        mentorsOptions[i].id == e.target.id &&
+        mentorsOptions[i].hidden === true
+      ) {
+        mentorsOptions[i].hidden = false;
+      } else {
+        mentorsOptions[i].hidden = true;
+      }
+    }
   };
 
   return (
     <Paper style={(styles.paper, styles.fixedHeight)}>
-      <div>
-        Info
-        {props.studentInfo.email}
-        {props.studentInfo.name}
-        {props.studentInfo.firstName}
-        {props.studentInfo.lastName}
-        {props.studentInfo.middleName}
-      </div>
-      <div className={classes.root}>
+      <div className={classes.container}>
+        <List className={classes.list}>
+          Info
+          {props.studentInfo.email}
+          {props.studentInfo.name}
+          {props.studentInfo.firstName}
+          {props.studentInfo.lastName}
+          {props.studentInfo.middleName}
+        </List>
+        {/* <div className={classes.root}> */}
         <List className={classes.list}>
           Previous and current skills
           {props.studentSkills.map((skill) => (
             <li key={skill.id}>
-              {skill.name} {skill.level_name}
+              {skill.name}
               {
                 {
                   junior: <StyledRating name="1" value={1} max={3} disabled />,
@@ -73,40 +108,76 @@ export default function Profile(props) {
                   senior: <StyledRating name="3" value={3} max={3} disabled />,
                 }[skill.level_name]
               }
+              {
+                {
+                  true: "Finished",
+                  false: "Not finished",
+                }[skill.approved]
+              }
             </li>
           ))}
         </List>
-      </div>
-      <List className={(classes.list, "nav1")}>
-        AvailableSkills
-        {props.availableSkills.map((avSkill) => (
-          <li key={avSkill.id}>
-            {/* <div className="nav1"> */}
-            {avSkill.name} {avSkill.level_name}
-            {
+        {/* </div> */}
+        <List>
+          Available Skills
+          {props.availableSkills.map((avSkill) => (
+            <ListItem key={avSkill.id} className="availskillslist">
+              {avSkill.name}
               {
-                junior: <StyledRating name="1" value={1} max={3} disabled />,
-                middle: <StyledRating name="2" value={2} max={3} disabled />,
-                senior: <StyledRating name="3" value={3} max={3} disabled />,
-              }[avSkill.level_name]
-            }
-            <button
-              key={avSkill.id}
-              id={avSkill.id}
-              onClick={(e) => handleShowMentors(e)}
-            >
+                {
+                  junior: <StyledRating name="1" value={1} max={3} disabled />,
+                  middle: <StyledRating name="2" value={2} max={3} disabled />,
+                  senior: <StyledRating name="3" value={3} max={3} disabled />,
+                }[avSkill.level_name]
+              }
+              <button
+                key={avSkill.id}
+                id={avSkill.id}
+                onClick={handleShowMentors}
+                className="styledButton"
               >
-            </button>
-            {/* <ul> */}
-            <div hidden={mentors}>
-              <li>1</li>
-              <li>2</li>
-            </div>
-            {/* </ul> */}
-            {/* </div> */}
-          </li>
-        ))}
-      </List>
+                >
+              </button>
+              <List className={classes.mentorslist}>
+                {props.mentorsList
+                  ? props.mentorsList.map((i) =>
+                      avSkill.id === selSkill ? (
+                        <ListItem
+                          key={i.id}
+                          id={avSkill.id}
+                          className="mentor"
+                          hidden={false}
+                          alignItems="flex-start"
+                        >
+                          <ListItemAvatar>
+                            <Avatar src="../../public/1.jpg" />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={i.email}
+                            secondary={
+                              <React.Fragment>
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  className={classes.inline}
+                                  color="textPrimary"
+                                >
+                                  {i.firstName} {i.lastName}
+                                </Typography>
+                              </React.Fragment>
+                            }
+                          />
+                        </ListItem>
+                      ) : (
+                        ""
+                      )
+                    )
+                  : ""}
+              </List>
+            </ListItem>
+          ))}
+        </List>
+      </div>
     </Paper>
   );
 }

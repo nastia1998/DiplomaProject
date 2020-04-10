@@ -20,8 +20,8 @@ export default function Dashboard() {
       "http://localhost:3000/api/v1/skills/manager",
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     setSkillsList(data);
@@ -32,8 +32,8 @@ export default function Dashboard() {
       "http://localhost:3000/api/v1/mentors/manager",
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     setMentorsList(data);
@@ -44,14 +44,14 @@ export default function Dashboard() {
       `http://localhost:3000/api/v1/mentors/${id}/skills/manager`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
 
     let b = [];
     Object.values(data).map((i, index) => {
-      Object.values(i).map(u => {
+      Object.values(i).map((u) => {
         b.push(`${index + 1}: ${u.name} `);
       });
     });
@@ -63,8 +63,8 @@ export default function Dashboard() {
       "http://localhost:3000/api/v1/users/potentialmentors/manager",
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     setStudentsList(data);
@@ -94,7 +94,7 @@ export default function Dashboard() {
               <SkillsTable
                 skillsList={skillsList}
                 updateSkillsList={() => updateSkillsList()}
-                setSkillsList={data => setSkillsList(data)}
+                setSkillsList={(data) => setSkillsList(data)}
               />
             </Grid>
             <Grid item xs={12} md={12} lg={6}>
@@ -102,7 +102,7 @@ export default function Dashboard() {
                 mentorsList={mentorsList}
                 studentsList={studentsList}
                 mentorsSkills={mentorsSkills}
-                setMentorsList={data => setMentorsList(data)}
+                setMentorsList={(data) => setMentorsList(data)}
                 updateMentorsList={() => updateMentorsList()}
                 updateStudentsList={() => updateStudentsList()}
                 fetchMentorsSkillsData={fetchMentorsSkillsData}
