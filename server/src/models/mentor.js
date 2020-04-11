@@ -5,13 +5,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       status: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true
-      }
+        defaultValue: true,
+      },
     },
     {}
   );
-  Mentor.associate = ({ User }) => {
+  Mentor.associate = ({ User, UserSkill }) => {
     Mentor.belongsTo(User, { foreignKey: "user_id" });
+    Mentor.hasMany(UserSkill, { foreignKey: "mentor_id" });
   };
   return Mentor;
 };

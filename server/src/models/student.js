@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-  const student = sequelize.define(
+  const Student = sequelize.define(
     "Student",
     {
       start_time_mentor: DataTypes.DATE,
@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  student.associate = function (models) {
-    // associations can be defined here
+  Student.associate = ({ UserSkill }) => {
+    Student.belongsTo(UserSkill, { foreignKey: "userskill_id" });
   };
-  return student;
+  return Student;
 };

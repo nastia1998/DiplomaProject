@@ -15,12 +15,14 @@ const {
   addUserSkill,
   approveUserSkill,
   getPotentialMentors,
-  getUserSkillsByUserId
+  getUserSkillsByUserId,
+  sendRequestToMentor,
 } = userController;
 
 const router = express.Router();
 
 router.post("/", addUser);
+router.post("/requests", sendRequestToMentor);
 router.post("/userskills/:userskillid", approveUserSkill);
 router.post("/userskills", addUserSkill);
 router.get("/:user_id/userskills", getUserSkillsByUserId);

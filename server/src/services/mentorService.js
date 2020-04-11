@@ -107,6 +107,24 @@ class MentorService {
       return error.message;
     }
   }
+
+  static async getAllRequests(mentor_id) {
+    try {
+      return await db.UserSkill.findAll({
+        attributes: [
+          "id",
+          "user_id",
+          "skill_id",
+          "mentor_id",
+          "is_approved_request",
+          "is_approved_skill",
+        ],
+        where: { mentor_id },
+      });
+    } catch (error) {
+      return error.message;
+    }
+  }
 }
 
 export default MentorService;

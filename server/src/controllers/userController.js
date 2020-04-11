@@ -150,6 +150,21 @@ class userController {
       return res.status(400).send(error.message);
     }
   }
+
+  static async sendRequestToMentor(req, res) {
+    try {
+      const { user_id, skill_id, mentor_id } = req.body;
+      if (!user_id || !skill_id || !mentor_id) {
+        return res.json("IDs of user, skill and mentor are required!");
+      }
+      const newRequest = req.body;
+      console.log(newRequest);
+      await userService.sendRequestToMentor(newRequest);
+      return res.status(201).send();
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
 }
 
 export default userController;

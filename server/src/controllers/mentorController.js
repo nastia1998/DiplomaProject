@@ -73,6 +73,15 @@ class mentorController {
       return res.status(400).send(error.message);
     }
   }
+  static async getAllRequests(req, res) {
+    try {
+      const { mentor_id } = req.params;
+      const requests = await mentorService.getAllRequests(mentor_id);
+      return res.status(200).send(requests);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
 }
 
 export default mentorController;

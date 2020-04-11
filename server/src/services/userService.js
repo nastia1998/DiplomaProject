@@ -150,7 +150,7 @@ class UserService {
     try {
       return await db.UserSkill.update(
         {
-          approved: true,
+          is_approved_skill: true,
         },
         {
           where: {
@@ -165,22 +165,6 @@ class UserService {
 
   static async getUserSkillsByUserId(userId) {
     try {
-      // return await db.UserSkill.findAll({
-      //   where: { user_id: userId },
-      //   attributes: [],
-      //   include: [
-      //     {
-      //       model: db.Skill,
-      //       attributes: [
-      //         "id",
-      //         "name",
-      //         "level_name",
-      //         "time_level",
-      //         "description"
-      //       ]
-      //     }
-      //   ]
-      // });
       return await db.sequelize.query(
         "select distinct on (s.name) s.name, s.level_name, s.time_level, s.description, us.approved " +
           'from "UserSkills" as us ' +
@@ -189,6 +173,14 @@ class UserService {
           "order by s.name, s.level_name desc",
         { replacements: { id: userId }, type: QueryTypes.SELECT }
       );
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async sendRequestToMentor(newRequest) {
+    try {
+      return await db.UserSkill.create(newRequest);
     } catch (error) {
       return error.message;
     }
