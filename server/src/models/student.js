@@ -8,8 +8,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Student.associate = ({ UserSkill }) => {
+  Student.associate = ({ UserSkill, Goal }) => {
     Student.belongsTo(UserSkill, { foreignKey: "userskill_id" });
+    Student.hasMany(Goal, { foreignKey: "student_id" });
   };
   return Student;
 };
