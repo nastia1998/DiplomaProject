@@ -5,44 +5,22 @@ import accessControl from "../middleware/accessControl";
 
 const {
   addUser,
-  addManager,
-  getManagers,
-  removeManager,
   findByCredentials,
   fetchUserProfile,
   updateUserInfo,
+  addManager,
+  getManagers,
+  removeManager,
   getStudents,
-  addUserSkill,
-  approveUserSkill,
-  getPotentialMentors,
-  getUserSkillsByUserId,
-  sendRequestToMentor,
 } = userController;
 
 const router = express.Router();
 
-router.post("/", addUser);
-router.post("/requests", sendRequestToMentor);
-router.post("/userskills/:userskillid", approveUserSkill);
-router.post("/userskills", addUserSkill);
-router.get("/:user_id/userskills", getUserSkillsByUserId);
-router.post(
-  "/:role/manager",
-  auth,
-  accessControl.grantAccess("createAny", "manager"),
-  addManager
-);
 router.get(
   "/:role/managers",
   auth,
   accessControl.grantAccess("readAny", "manager"),
   getManagers
-);
-router.delete(
-  "/:role/managers/:manager_id",
-  auth,
-  accessControl.grantAccess("deleteAny", "manager"),
-  removeManager
 );
 router.get(
   "/students/:role",
@@ -50,14 +28,24 @@ router.get(
   accessControl.grantAccess("readAny", "student"),
   getStudents
 );
-router.get(
-  "/potentialmentors/:role",
+router.get("/me", auth, fetchUserProfile);
+
+router.post(
+  "/:role/manager",
   auth,
-  accessControl.grantAccess("readAny", "student"),
-  getPotentialMentors
+  accessControl.grantAccess("createAny", "manager"),
+  addManager
 );
 router.post("/login", findByCredentials);
-router.get("/me", auth, fetchUserProfile);
+router.post("/", addUser);
+
 router.put("/:user_id", auth, updateUserInfo);
+
+router.delete(
+  "/:role/managers/:manager_id",
+  auth,
+  accessControl.grantAccess("deleteAny", "manager"),
+  removeManager
+);
 
 export default router;

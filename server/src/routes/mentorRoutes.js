@@ -9,7 +9,6 @@ const {
   removeMentor,
   getMentorSkills,
   getMentorsBySkillId,
-  getAllRequests,
 } = mentorController;
 
 const router = express.Router();
@@ -34,8 +33,6 @@ router.get(
   accessControl.grantAccess("readAny", "mentor"),
   getMentorSkills
 );
-
-router.get("/:mentor_id/requests", getAllRequests);
 
 router.get(
   "/:skill_id/:role",

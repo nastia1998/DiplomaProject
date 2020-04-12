@@ -107,64 +107,6 @@ class userController {
       return res.status(400).send(error.message);
     }
   }
-
-  static async getPotentialMentors(req, res) {
-    try {
-      const potentialMentors = await userService.getPotentialMentors();
-      return res.status(200).send(potentialMentors);
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
-
-  static async addUserSkill(req, res) {
-    try {
-      const { user_id, skill_id } = req.body;
-      if (!user_id || !skill_id) {
-        return res.json("IDs of user and skill are required!");
-      }
-      const newUserSkill = req.body;
-      const createdUserSkill = await userService.addUserSkill(newUserSkill);
-      return res.status(201).send({ createdUserSkill });
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
-
-  static async approveUserSkill(req, res) {
-    try {
-      const { userskillid } = req.params;
-      const count = await userService.approveUserSkill(userskillid);
-      return res.status(200).send(count);
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
-
-  static async getUserSkillsByUserId(req, res) {
-    try {
-      const { user_id } = req.params;
-      const skills = await userService.getUserSkillsByUserId(user_id);
-      return res.status(200).send(skills);
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
-
-  static async sendRequestToMentor(req, res) {
-    try {
-      const { user_id, skill_id, mentor_id } = req.body;
-      if (!user_id || !skill_id || !mentor_id) {
-        return res.json("IDs of user, skill and mentor are required!");
-      }
-      const newRequest = req.body;
-      console.log(newRequest);
-      await userService.sendRequestToMentor(newRequest);
-      return res.status(201).send();
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
 }
 
 export default userController;

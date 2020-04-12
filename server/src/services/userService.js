@@ -2,10 +2,6 @@ import db from "../models";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Sequelize from "sequelize";
-import _ from "lodash";
-import { QueryTypes } from "sequelize";
-
-const Op = Sequelize.Op;
 
 class UserService {
   static async addUser(newUser) {
@@ -114,76 +110,8 @@ class UserService {
     }
   }
 
-  static async getPotentialMentors() {
-    try {
-      const potentialMentors = await db.UserSkill.findAll({
-        where: { approved: true, skill_id: { [Op.ne]: null } },
-        include: [
-          {
-            model: db.Skill,
-            where: { level_name: "senior" },
-          },
-          { model: db.User },
-        ],
-      });
-
-      const result = _.uniqBy(potentialMentors, "user_id");
-      return result;
-    } catch (error) {
-      return error.message;
-    }
-  }
-
   static async generateAuthToken(userId) {
     return jwt.sign({ id: userId }, process.env.JWT_KEY, { expiresIn: "1h" });
-  }
-
-  static async addUserSkill(newUserSkill) {
-    try {
-      return await db.UserSkill.create(newUserSkill);
-    } catch (error) {
-      return error.message;
-    }
-  }
-
-  static async approveUserSkill(userSkillId) {
-    try {
-      return await db.UserSkill.update(
-        {
-          is_approved_skill: true,
-        },
-        {
-          where: {
-            id: userSkillId,
-          },
-        }
-      );
-    } catch (error) {
-      return error.message;
-    }
-  }
-
-  static async getUserSkillsByUserId(userId) {
-    try {
-      return await db.sequelize.query(
-        "select distinct on (s.name) s.name, s.level_name, s.time_level, s.description, us.approved " +
-          'from "UserSkills" as us ' +
-          'join "Skills" as s on us.skill_id = s.id ' +
-          "where us.user_id = :id " +
-          "order by s.name, s.level_name desc",
-        { replacements: { id: userId }, type: QueryTypes.SELECT }
-      );
-    } catch (error) {
-      return error.message;
-    }
-  }
-
-  static async sendRequestToMentor(newRequest) {
-    try {
-      return await db.UserSkill.create(newRequest);
-    } catch (error) {
-      return error.message;
-    }
   }
 }
 

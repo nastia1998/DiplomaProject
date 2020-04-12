@@ -5,6 +5,7 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes";
 import skillRoutes from "./routes/skillRoutes";
 import mentorRoutes from "./routes/mentorRoutes";
+import userskillRoutes from "./routes/userskillRoutes";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use(async (req, res, next) => {
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/skills", skillRoutes);
 app.use("/api/v1/mentors", mentorRoutes);
+app.use("/api/v1/userskills", userskillRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

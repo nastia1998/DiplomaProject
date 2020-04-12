@@ -23,7 +23,6 @@ class SkillService {
   static async getAvailableSkillsForUser(userId) {
     try {
       return await db.sequelize.query(
-        // 'SELECT * FROM "Skills" WHERE id NOT IN (SELECT skill_id from "UserSkills" WHERE user_id = :id)',
         "select distinct on (s.name) s.name, s.level_name, s.id, s.time_level, s.description " +
           'from "UserSkills" as us ' +
           'join "Skills" as s on us.skill_id = s.id ' +
@@ -51,6 +50,14 @@ class SkillService {
   static async findSkill(id) {
     try {
       return await db.Skill.findByPk(id);
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async findSkillAsCollection(id) {
+    try {
+      return await db.Skill.findAll({ where: { id } });
     } catch (error) {
       return error.message;
     }
