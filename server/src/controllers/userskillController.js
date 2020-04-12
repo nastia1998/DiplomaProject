@@ -109,6 +109,20 @@ class userskillController {
       return res.status(400).send(error.message);
     }
   }
+
+  static async getUnconfirmedRequests(req, res) {
+    try {
+      const { user_id } = req.params;
+      console.log(1111, user_id);
+      const unconfirmedRequests = await userskillService.getUnconfirmedRequests(
+        Number(user_id)
+      );
+      console.log(unconfirmedRequests);
+      return res.status(200).send(unconfirmedRequests);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
 }
 
 export default userskillController;

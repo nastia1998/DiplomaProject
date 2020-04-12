@@ -11,6 +11,7 @@ const {
   sendRequestToMentor,
   getAllRequests,
   approveRequest,
+  getUnconfirmedRequests,
 } = userskillController;
 
 const router = express.Router();
@@ -23,9 +24,10 @@ router.get(
   getPotentialMentors
 );
 router.get("/:mentor_id/requests", getAllRequests);
+router.get("/:user_id/requests/unconfirmed", getUnconfirmedRequests);
 router.post("/requests", sendRequestToMentor);
 router.post("/:userskill_id", approveUserSkill);
-// router.post("/", addUserSkill);
+router.post("/", addUserSkill);
 router.put("/:userskill_id", approveRequest);
 
 export default router;

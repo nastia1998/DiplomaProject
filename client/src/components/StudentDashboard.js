@@ -7,12 +7,14 @@ import styles from "../styles/StudentDashboard.css";
 import axios from "axios";
 
 import Profile from "./Profile";
+import StudentRequestsQueue from "./StudentRequestsQueue";
 
 export default function Dashboard() {
   const [studentInfo, setStudentInfo] = useState([]);
   const [studentSkills, setStundentSkills] = useState([]);
   const [availableSkills, setAvailableSkills] = useState([]);
   const [mentorsList, setMentorsList] = useState([]);
+  const [unconfirmedRequests, setUnconfirmedRequests] = useState([]);
 
   async function fetchStudentInfo() {
     const { data } = await axios.get("http://localhost:3000/api/v1/users/me", {
@@ -25,9 +27,9 @@ export default function Dashboard() {
 
   async function fetchStudentSkills() {
     const { data } = await axios.get(
-      `http://localhost:3000/api/v1/users/${localStorage.getItem(
+      `http://localhost:3000/api/v1/userskills/users/${localStorage.getItem(
         "userId"
-      )}/userskills`
+      )}`
     );
     // const res = [];
     // Object.values(data).map((i) => {
@@ -64,10 +66,47 @@ export default function Dashboard() {
     setMentorsList([]);
   }
 
+  async function sendRequestToMentor(mentor_id, skill_id) {
+    const body = {
+      user_id: Number(localStorage.getItem("userId")),
+      skill_id: Number(skill_id),
+      mentor_id: Number(mentor_id),
+    };
+    const { data } = await axios.post(
+      "http://localhost:3000/api/v1/userskills/requests",
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    updateAvailableSkills();
+  }
+
+  async function updateAvailableSkills() {
+    fetchAvailableSkills();
+  }
+
+  async function getUnconfirmedRequests() {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/v1/userskills/${localStorage.getItem(
+        "userId"
+      )}/requests/unconfirmed`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setUnconfirmedRequests(data);
+  }
+
   useEffect(() => {
     fetchStudentInfo();
     fetchStudentSkills();
     fetchAvailableSkills();
+    getUnconfirmedRequests();
   }, []);
 
   const updateStudentInfo = () => fetchStudentInfo();
@@ -86,10 +125,14 @@ export default function Dashboard() {
                 fetchMentorsForSkill={fetchMentorsForSkill}
                 clearMentorsList={clearMentorsList}
                 mentorsList={mentorsList}
+                sendRequestToMentor={sendRequestToMentor}
               />
             </Grid>
             <Grid item xs={12} md={6} lg={2}>
-              dddd
+              <StudentRequestsQueue
+                // getUnconfirmedRequests={getUnconfirmedRequests}
+                unconfirmedRequests={unconfirmedRequests}
+              />
             </Grid>
             <Grid item xs={12} md={12} lg={5}>
               ssss
