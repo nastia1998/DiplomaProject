@@ -23,7 +23,7 @@ router.get(
   getPotentialMentors
 );
 router.get("/:mentor_id/requests", getAllRequests);
-// router.post("/requests", sendRequestToMentor);
+router.post("/requests", sendRequestToMentor);
 router.post("/:userskill_id", approveUserSkill);
 // router.post("/", addUserSkill);
 router.put("/:userskill_id", approveRequest);

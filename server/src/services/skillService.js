@@ -29,6 +29,7 @@ class SkillService {
           'join "Users" as u on us.user_id = u.id ' +
           'join "Mentors" as me on u.id = me.user_id ' +
           'where s.id not in (SELECT skill_id from "UserSkills" WHERE user_id = :id) ' +
+          "and us.is_approved_request = false " +
           "order by s.name, s.level_name",
         { replacements: { id: userId }, type: QueryTypes.SELECT }
       );

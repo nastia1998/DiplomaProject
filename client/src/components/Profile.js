@@ -74,7 +74,7 @@ export default function Profile(props) {
     const mentorsOptions = document.getElementsByClassName("mentor");
     for (let i = 0; i < mentorsOptions.length; i++) {
       if (
-        mentorsOptions[i].id == e.target.id &&
+        Number(mentorsOptions[i].id) === Number(e.target.id) &&
         mentorsOptions[i].hidden === true
       ) {
         mentorsOptions[i].hidden = false;
@@ -82,6 +82,21 @@ export default function Profile(props) {
         mentorsOptions[i].hidden = true;
       }
     }
+  };
+
+  const handleSendRequest = (e) => {
+    let skillid;
+    let mentorid;
+    if (!e.target.id) {
+      const el = e.target.closest("ul > div");
+      skillid = el.id;
+      mentorid = el.getAttribute("mentorid");
+    } else {
+      skillid = e.target.id;
+      mentorid = e.target.getAttribute("mentorid");
+    }
+    console.log(skillid, mentorid);
+    props.sendRequestToMentor(mentorid, skillid);
   };
 
   return (
@@ -143,11 +158,13 @@ export default function Profile(props) {
                   ? props.mentorsList.map((i) =>
                       avSkill.id === selSkill ? (
                         <ListItem
+                          button
                           key={i.id}
                           id={avSkill.id}
+                          mentorid={i.id}
                           className="mentor"
-                          hidden={false}
                           alignItems="flex-start"
+                          onClick={handleSendRequest}
                         >
                           <ListItemAvatar>
                             <Avatar src="../../public/1.jpg" />

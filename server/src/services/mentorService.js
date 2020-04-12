@@ -97,10 +97,11 @@ class MentorService {
   static async getMentorsBySkillId(skill_id) {
     try {
       return await db.sequelize.query(
-        'select me.id, u.email, u."firstName", u."lastName" from "Users" as u ' +
-          'inner join "Mentors" as me on u.id = me.user_id ' +
-          'inner join "UserSkills" as us on us.user_id = u.id ' +
-          'inner join "Skills" as s on us.skill_id = s.id where s.id = :id',
+        'select distinct on(me.id) me.id, u.email, u."firstName", u."lastName" from "Users" as u ' +
+          'join "Mentors" as me on u.id = me.user_id ' +
+          'join "UserSkills" as us on us.user_id = u.id ' +
+          'join "Skills" as s on us.skill_id = s.id where s.id = :id ' +
+          "order by me.id",
         { replacements: { id: skill_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {

@@ -36,8 +36,8 @@ router.get(
 
 router.get(
   "/:skill_id/:role",
-  auth,
-  accessControl.grantAccess("readAny", "mentor"),
+  // auth,
+  // accessControl.grantAccess("readAny", "mentor"),
   getMentorsBySkillId
 );
 
