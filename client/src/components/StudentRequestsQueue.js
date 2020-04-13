@@ -1,12 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Paper, List, ListItem } from "@material-ui/core";
 
 import styles from "../styles/StudentDashboard.css";
 
 export default function StudentRequestsQueue(props) {
-  // useEffect(() => {
-  //   props.getUnconfirmedRequests();
-  // }, []);
   return (
     <Paper style={(styles.paper, styles.fixedHeight)}>
       <List>

@@ -85,14 +85,20 @@ class UserSkillService {
     }
   }
 
-  static async getAllRequests(mentor_id) {
+  static async getAllRequests(user_id) {
     try {
       return await db.sequelize.query(
-        'select us.id, u."firstName", u."lastName", s.name, s.level_name, s.time_level, us.is_approved_request ' +
-          'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
+        // 'select us.id, u."firstName", u."lastName", s.name, s.level_name, s.time_level, us.is_approved_request ' +
+        //   'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
+        //   'join "Users" as u on us.user_id = u.id ' +
+        //   "where us.mentor_id = :mentor_id",
+        'select us.id, s.id as skill_id, s.name, s.level_name, u.id as user_id, u.email, u."firstName", u."lastName" ' +
+          'from "UserSkills" as us ' +
+          'join "Mentors" as me on us.mentor_id = me.id ' +
           'join "Users" as u on us.user_id = u.id ' +
-          "where us.mentor_id = :mentor_id",
-        { replacements: { mentor_id: mentor_id }, type: QueryTypes.SELECT }
+          'join "Skills" as s on us.skill_id = s.id ' +
+          "where me.user_id = :user_id and us.is_approved_request = false",
+        { replacements: { user_id: user_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {
       return error.message;
@@ -120,6 +126,13 @@ class UserSkillService {
           "where us.user_id = :user_id and us.is_approved_request = false",
         { replacements: { user_id: user_id }, type: QueryTypes.SELECT }
       );
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async getUserSkillWithByIdWithInfo(userskill_id) {
+    try {
     } catch (error) {
       return error.message;
     }

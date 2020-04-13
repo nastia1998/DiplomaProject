@@ -7,6 +7,7 @@ import SignIn from "./components/SignIn";
 import Profile from "./components/Profile";
 import ManagerDashboard from "./components/ManagerDashboard";
 import StudentDashboard from "./components/StudentDashboard";
+import MentorDashboard from "./components/MentorDashboard";
 
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
@@ -29,7 +30,7 @@ export default function App() {
     localStorage.getItem("loggedIn")
   );
 
-  const handleLogin = e => setIsLogin(true);
+  const handleLogin = (e) => setIsLogin(true);
 
   return (
     <div>
@@ -39,8 +40,8 @@ export default function App() {
           name="signin"
           exact
           path="/signin"
-          render={props => (
-            <SignIn {...props} handleLogin={e => handleLogin(e)} />
+          render={(props) => (
+            <SignIn {...props} handleLogin={(e) => handleLogin(e)} />
           )}
         />
         <Route name="signup" exact path="/signup" component={SignUp} />
@@ -61,6 +62,12 @@ export default function App() {
           exact
           path="/studentdashboard"
           component={StudentDashboard}
+        />
+        <Route
+          name="mentordashboard"
+          exact
+          path="/mentordashboard"
+          component={MentorDashboard}
         />
       </Router>
       <Box pt={4}>

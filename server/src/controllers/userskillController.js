@@ -75,8 +75,8 @@ class userskillController {
 
   static async getAllRequests(req, res) {
     try {
-      const { mentor_id } = req.params;
-      const requests = await userskillService.getAllRequests(mentor_id);
+      const { user_id } = req.params;
+      const requests = await userskillService.getAllRequests(user_id);
       return res.status(200).send(requests);
     } catch (error) {
       return res.status(400).send(error.message);
@@ -113,14 +113,24 @@ class userskillController {
   static async getUnconfirmedRequests(req, res) {
     try {
       const { user_id } = req.params;
-      console.log(1111, user_id);
       const unconfirmedRequests = await userskillService.getUnconfirmedRequests(
         Number(user_id)
       );
-      console.log(unconfirmedRequests);
       return res.status(200).send(unconfirmedRequests);
     } catch (error) {
       return res.status(400).send(error.message);
+    }
+  }
+
+  static async getUserSkillWithByIdWithInfo(req, res) {
+    try {
+      const { userskill_id } = req.params;
+      const userskillsWithInfo = await userskillService.getUserSkillWithByIdWithInfo(
+        userskill_id
+      );
+      return res.status(200).send(userskillsWithInfo);
+    } catch (error) {
+      return error.message;
     }
   }
 }
