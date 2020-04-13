@@ -119,7 +119,7 @@ class UserSkillService {
   static async getUnconfirmedRequests(user_id) {
     try {
       return await db.sequelize.query(
-        'select me.id as mentor_id, s.id as skill_id, s.name, s.level_name, u.email, u."firstName", u."lastName" ' +
+        'select me.id as mentor_id, s.id as skill_id, us.id, s.name, s.level_name, u.email, u."firstName", u."lastName" ' +
           'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
           'join "Mentors" as me on us.mentor_id = me.id ' +
           'join "Users" as u on me.user_id = u.id ' +
@@ -140,6 +140,17 @@ class UserSkillService {
           'join "Users" as u on me.user_id = u.id ' +
           "where us.user_id = :user_id and us.is_approved_request = true",
         { replacements: { user_id: user_id }, type: QueryTypes.SELECT }
+      );
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async cancelRequest(userskill_id) {
+    try {
+      return await db.sequelize.query(
+        'delete from "UserSkills" where id = :id ',
+        { replacements: { id: userskill_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {
       return error.message;

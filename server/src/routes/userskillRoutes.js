@@ -14,6 +14,7 @@ const {
   getUnconfirmedRequests,
   getUserSkillWithByIdWithInfo,
   getConfirmedRequests,
+  cancelRequest,
 } = userskillController;
 
 const router = express.Router();
@@ -33,5 +34,6 @@ router.post("/requests", sendRequestToMentor);
 router.post("/:userskill_id", approveUserSkill);
 router.post("/", addUserSkill);
 router.put("/:userskill_id", approveRequest);
+router.delete("/:userskill_id", cancelRequest);
 
 export default router;

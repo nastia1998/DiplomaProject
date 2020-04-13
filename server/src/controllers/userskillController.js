@@ -145,6 +145,16 @@ class userskillController {
       return error.message;
     }
   }
+
+  static async cancelRequest(req, res) {
+    try {
+      const { userskill_id } = req.params;
+      const deletedRequest = await userskillService.cancelRequest(userskill_id);
+      return res.status(200).send(deletedRequest);
+    } catch (error) {
+      return error.message;
+    }
+  }
 }
 
 export default userskillController;

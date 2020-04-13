@@ -61,7 +61,6 @@ export default function Dashboard() {
       }
     );
     setMentorsList(data);
-    console.log(data);
   }
 
   async function clearMentorsList() {
@@ -74,7 +73,6 @@ export default function Dashboard() {
       skill_id: Number(skill_id),
       mentor_id: Number(mentor_id),
     };
-    console.log(222, body);
     const { data } = await axios.post(
       "http://localhost:3000/api/v1/userskills/requests",
       body,
@@ -106,6 +104,7 @@ export default function Dashboard() {
     );
     setUnconfirmedRequests(data);
   }
+
   async function getConfirmedRequests() {
     const { data } = await axios.get(
       `http://localhost:3000/api/v1/userskills/${localStorage.getItem(
@@ -118,6 +117,20 @@ export default function Dashboard() {
       }
     );
     setConfirmedRequests(data);
+  }
+
+  async function cancelRequest(userskill_id) {
+    await axios.delete(
+      `http://localhost:3000/api/v1/userskills/${userskill_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    getUnconfirmedRequests();
+    fetchAvailableSkills();
+    fetchStudentSkills();
   }
 
   useEffect(() => {
@@ -149,8 +162,8 @@ export default function Dashboard() {
             </Grid>
             <Grid item xs={12} md={6} lg={3}>
               <StudentRequestsQueue
-                // getUnconfirmedRequests={getUnconfirmedRequests}
                 unconfirmedRequests={unconfirmedRequests}
+                cancelRequest={(userskill_id) => cancelRequest(userskill_id)}
               />
             </Grid>
             <Grid item xs={12} md={12} lg={4}>
