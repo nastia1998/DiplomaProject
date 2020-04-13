@@ -25,7 +25,7 @@ export default function NavBar(props) {
         </Typography>
         {props.isLogin ? (
           <Typography variant="h6" style={styles.menuButton}>
-            <Button href="/" onClick={handleLogOut}>
+            <Button href="/" onClick={handleLogOut} style={styles.menuButton}>
               Sign out
             </Button>
           </Typography>

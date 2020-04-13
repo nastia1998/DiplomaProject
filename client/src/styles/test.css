@@ -1,21 +1,7 @@
-/* .availskillslist 
-{
-    display: flex;
-} */
-
-/* .mentorslist
-{
-    padding: 0;
-} */
-/* .mentorslist > li
-{
-    list-style-type: none;
-} */
-
 
 .styledButton
 {
-    color: #10913bb6 !important;
+    color: #6735c5b6 !important;
     text-transform: uppercase;
     text-decoration: none;
     background: #ffffff;
@@ -28,7 +14,7 @@
 button:hover
 {
     /* color: #ffffff !important; */
-    background: #0557455e;
+    background: #8d68f32c;
     /* border-color: #f6b93b !important; */
     transition: all 0.4s ease 0s;
 }

@@ -18,7 +18,7 @@ export default function SignIn(props) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
-  const onChange = e => {
+  const onChange = (e) => {
     switch (e.target.type) {
       case "text":
         setEmail(e.target.value);
@@ -31,11 +31,11 @@ export default function SignIn(props) {
     }
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const body = {
       email,
-      password
+      password,
     };
     if (!body.email || !body.password) {
       alert("Email and password are required!");
@@ -55,6 +55,7 @@ export default function SignIn(props) {
             history.push("/managerdashboard");
             break;
           case "mentor":
+            history.push("/mentordashboard");
             break;
           case "student":
             history.push("/studentdashboard");
@@ -80,7 +81,7 @@ export default function SignIn(props) {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form style={styles.form} noValidate onSubmit={e => handleSubmit(e)}>
+        <form style={styles.form} noValidate onSubmit={(e) => handleSubmit(e)}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField

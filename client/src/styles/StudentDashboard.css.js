@@ -24,4 +24,11 @@ export default {
   fixedHeight: {
     height: 567,
   },
+  requеstsList: {
+    display: "flex",
+    flexDirection: "column",
+    overflow: "auto",
+    padding: theme.spacing(2),
+    // alignItems: "center",
+  },
 };

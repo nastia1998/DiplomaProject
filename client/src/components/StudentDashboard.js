@@ -8,6 +8,7 @@ import axios from "axios";
 
 import Profile from "./Profile";
 import StudentRequestsQueue from "./StudentRequestsQueue";
+import ConfirmedRequestsList from "./ConfirmedRequestsList";
 
 export default function Dashboard() {
   const [studentInfo, setStudentInfo] = useState([]);
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const [availableSkills, setAvailableSkills] = useState([]);
   const [mentorsList, setMentorsList] = useState([]);
   const [unconfirmedRequests, setUnconfirmedRequests] = useState([]);
+  const [confirmedRequests, setConfirmedRequests] = useState([]);
 
   async function fetchStudentInfo() {
     const { data } = await axios.get("http://localhost:3000/api/v1/users/me", {
@@ -72,6 +74,7 @@ export default function Dashboard() {
       skill_id: Number(skill_id),
       mentor_id: Number(mentor_id),
     };
+    console.log(222, body);
     const { data } = await axios.post(
       "http://localhost:3000/api/v1/userskills/requests",
       body,
@@ -82,6 +85,8 @@ export default function Dashboard() {
       }
     );
     updateAvailableSkills();
+    fetchStudentSkills();
+    getUnconfirmedRequests();
   }
 
   async function updateAvailableSkills() {
@@ -101,12 +106,26 @@ export default function Dashboard() {
     );
     setUnconfirmedRequests(data);
   }
+  async function getConfirmedRequests() {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/v1/userskills/${localStorage.getItem(
+        "userId"
+      )}/requests/confirmed`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setConfirmedRequests(data);
+  }
 
   useEffect(() => {
     fetchStudentInfo();
     fetchStudentSkills();
     fetchAvailableSkills();
     getUnconfirmedRequests();
+    getConfirmedRequests();
   }, []);
 
   const updateStudentInfo = () => fetchStudentInfo();
@@ -128,14 +147,14 @@ export default function Dashboard() {
                 sendRequestToMentor={sendRequestToMentor}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={2}>
+            <Grid item xs={12} md={6} lg={3}>
               <StudentRequestsQueue
                 // getUnconfirmedRequests={getUnconfirmedRequests}
                 unconfirmedRequests={unconfirmedRequests}
               />
             </Grid>
-            <Grid item xs={12} md={12} lg={5}>
-              ssss
+            <Grid item xs={12} md={12} lg={4}>
+              <ConfirmedRequestsList confirmedRequests={confirmedRequests} />
             </Grid>
           </Grid>
         </Container>

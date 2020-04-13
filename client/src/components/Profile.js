@@ -13,188 +13,184 @@ import {
   ListItemText,
   Typography,
   Divider,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Collapse,
 } from "@material-ui/core";
-import ArrowForwardIosOutlinedIcon from "@material-ui/icons/ArrowForwardIosOutlined";
 import Rating from "@material-ui/lab/Rating";
 
 import styles from "../styles/StudentDashboard.css";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MentorsDialog from "./MentorsDialog";
+
 import style from "../styles/test.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    overflow: "hidden",
-    marginLeft: "10px",
-    backgroundColor: theme.palette.background.paper,
-  },
-  gridList: {
-    width: 500,
-    height: 450,
-  },
-  icon: {
-    color: "rgba(255, 255, 255, 0.54)",
-  },
-  list: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    maxHeight: "100%",
     overflow: "auto",
   },
-  mentorslist: {
-    width: "100%",
-    maxWidth: "36ch",
-    backgroundColor: theme.palette.background.paper,
+  media: {
+    height: 0,
+    paddingTop: "56.25%", // 16:9
   },
-  container: {
-    overflow: "auto",
-    height: 567,
+  expand: {
+    transform: "rotate(0deg)",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: "rotate(180deg)",
+  },
+  avatar: {
+    backgroundColor: "#C7B08B",
   },
 }));
 
 const StyledRating = withStyles({
   iconFilled: {
-    color: "#2B924A",
+    color: "#5c6bc0",
   },
 })(Rating);
 
 export default function Profile(props) {
   const [mentors, setMentors] = useState(false);
   const [selSkill, setSelSkill] = useState(0);
+  const [open, setOpen] = React.useState(false);
+  const [selectedSkillId, setSelectedSkillId] = React.useState(0);
 
-  const classes = useStyles();
-
-  const handleShowMentors = (e) => {
-    props.fetchMentorsForSkill(e.target.id);
-    setSelSkill(Number(e.target.id));
-    const mentorsOptions = document.getElementsByClassName("mentor");
-    for (let i = 0; i < mentorsOptions.length; i++) {
-      if (
-        Number(mentorsOptions[i].id) === Number(e.target.id) &&
-        mentorsOptions[i].hidden === true
-      ) {
-        mentorsOptions[i].hidden = false;
-      } else {
-        mentorsOptions[i].hidden = true;
-      }
-    }
+  const handleClickOpen = (e) => {
+    setOpen(true);
+    setSelectedSkillId(+e.target.id);
+    props.fetchMentorsForSkill(+e.target.id);
   };
 
-  const handleSendRequest = (e) => {
-    let skillid;
-    let mentorid;
-    if (!e.target.id) {
-      const el = e.target.closest("ul > div");
-      skillid = el.id;
-      mentorid = el.getAttribute("mentorid");
-    } else {
-      skillid = e.target.id;
-      mentorid = e.target.getAttribute("mentorid");
-    }
-    console.log(skillid, mentorid);
-    props.sendRequestToMentor(mentorid, skillid);
+  const handleClose = (value) => {
+    setOpen(false);
+  };
+
+  const classes = useStyles();
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+
+  const handleSendRequest = (mentor_id, skill_id) => {
+    props.sendRequestToMentor(mentor_id, skill_id);
   };
 
   return (
-    <Paper style={(styles.paper, styles.fixedHeight)}>
-      <div className={classes.container}>
+    <Card style={(styles.paper, styles.fixedHeight)} className={classes.root}>
+      <CardHeader
+        avatar={
+          <Avatar aria-label="recipe" className={classes.avatar}>
+            {props.studentInfo.firstName
+              ? props.studentInfo.firstName.substring(0, 1)
+              : "N"}
+          </Avatar>
+        }
+        title={
+          props.studentInfo.firstName ||
+          "" + " " + props.studentInfo.lastName ||
+          "" + " " + props.studentInfo.middleName ||
+          ""
+        }
+        subheader={props.studentInfo.email}
+      />
+
+      <CardContent>
         <List className={classes.list}>
-          Info
-          {props.studentInfo.email}
-          {props.studentInfo.name}
-          {props.studentInfo.firstName}
-          {props.studentInfo.lastName}
-          {props.studentInfo.middleName}
-        </List>
-        {/* <div className={classes.root}> */}
-        <List className={classes.list}>
-          Previous and current skills
+          <Typography variant="h6">Previous and current skills</Typography>
           {props.studentSkills.map((skill) => (
             <li key={skill.id}>
-              {skill.name}
-              {
+              <Typography paragraph>
+                {skill.name}
                 {
-                  junior: <StyledRating name="1" value={1} max={3} disabled />,
-                  middle: <StyledRating name="2" value={2} max={3} disabled />,
-                  senior: <StyledRating name="3" value={3} max={3} disabled />,
-                }[skill.level_name]
-              }
-              {
+                  {
+                    junior: (
+                      <StyledRating name="1" value={1} max={3} disabled />
+                    ),
+                    middle: (
+                      <StyledRating name="2" value={2} max={3} disabled />
+                    ),
+                    senior: (
+                      <StyledRating name="3" value={3} max={3} disabled />
+                    ),
+                  }[skill.level_name]
+                }
                 {
-                  true: "Finished",
-                  false: "Not finished",
-                }[skill.approved]
-              }
+                  {
+                    true: "Finished",
+                    false: "In process",
+                  }[skill.is_approved_skill]
+                }
+              </Typography>
             </li>
           ))}
         </List>
-        {/* </div> */}
-        <List>
-          Available Skills
-          {props.availableSkills.map((avSkill) => (
-            <ListItem key={avSkill.id} className="availskillslist">
-              {avSkill.name}
-              {
-                {
-                  junior: <StyledRating name="1" value={1} max={3} disabled />,
-                  middle: <StyledRating name="2" value={2} max={3} disabled />,
-                  senior: <StyledRating name="3" value={3} max={3} disabled />,
-                }[avSkill.level_name]
-              }
-              <button
-                key={avSkill.id}
-                id={avSkill.id}
-                onClick={handleShowMentors}
-                className="styledButton"
-              >
-                >
-              </button>
-              <List className={classes.mentorslist}>
-                {props.mentorsList
-                  ? props.mentorsList.map((i) =>
-                      avSkill.id === selSkill ? (
-                        <ListItem
-                          button
-                          key={i.id}
-                          id={avSkill.id}
-                          mentorid={i.id}
-                          className="mentor"
-                          alignItems="flex-start"
-                          onClick={handleSendRequest}
-                        >
-                          <ListItemAvatar>
-                            <Avatar src="../../public/1.jpg" />
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={i.email}
-                            secondary={
-                              <React.Fragment>
-                                <Typography
-                                  component="span"
-                                  variant="body2"
-                                  className={classes.inline}
-                                  color="textPrimary"
-                                >
-                                  {i.firstName} {i.lastName}
-                                </Typography>
-                              </React.Fragment>
-                            }
-                          />
-                        </ListItem>
-                      ) : (
-                        ""
-                      )
-                    )
-                  : ""}
-              </List>
-            </ListItem>
-          ))}
-        </List>
-      </div>
-    </Paper>
+      </CardContent>
+      <CardActions disableSpacing>
+        <IconButton
+          className={clsx(classes.expand, {
+            [classes.expandOpen]: expanded,
+          })}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more"
+        >
+          <ExpandMoreIcon />
+        </IconButton>
+      </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <List>
+            <Typography variant="h6">Available Skills</Typography>
+            {props.availableSkills.map((avSkill) => (
+              <ListItem key={avSkill.id} className="availskillslist">
+                <Typography paragraph>
+                  {avSkill.name}
+                  {
+                    {
+                      junior: (
+                        <StyledRating name="1" value={1} max={3} disabled />
+                      ),
+                      middle: (
+                        <StyledRating name="2" value={2} max={3} disabled />
+                      ),
+                      senior: (
+                        <StyledRating name="3" value={3} max={3} disabled />
+                      ),
+                    }[avSkill.level_name]
+                  }
+                  <button
+                    key={avSkill.id}
+                    id={avSkill.id}
+                    onClick={(e) => handleClickOpen(e)}
+                    className="styledButton"
+                  >
+                    >
+                  </button>
+                </Typography>
+                <MentorsDialog
+                  selectedSkillId={selectedSkillId}
+                  open={open}
+                  onClose={handleClose}
+                  mentorsList={props.mentorsList}
+                  handleSendRequest={(mentor_id, skill_id) =>
+                    handleSendRequest(mentor_id, skill_id)
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </CardContent>
+      </Collapse>
+    </Card>
   );
 }

@@ -24,7 +24,7 @@ export default function SignUp() {
   const [lname, setLname] = useState("");
   const [mname, setMname] = useState("");
 
-  const onChange = e => {
+  const onChange = (e) => {
     switch (e.target.name) {
       case "email":
         setEmail(e.target.value);
@@ -49,14 +49,14 @@ export default function SignUp() {
     }
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const body = {
       email: email,
       password: password,
       firstName: fname,
       lastName: lname,
-      middleName: mname
+      middleName: mname,
     };
     if (!body.email || !body.password) {
       alert("Email and password are required!");
@@ -68,7 +68,7 @@ export default function SignUp() {
           "http://localhost:3000/api/v1/users",
           body
         );
-        if (data.userData) history.push("/signin");
+        if (data.userData) history.push("/");
       } catch (e) {
         console.log(e.message);
         if (e.response.status === "400") {
@@ -89,7 +89,7 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form style={styles.form} noValidate onSubmit={e => handleSubmit(e)}>
+        <form style={styles.form} noValidate onSubmit={(e) => handleSubmit(e)}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -175,7 +175,7 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="/signin" variant="body2">
+              <Link href="/" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>

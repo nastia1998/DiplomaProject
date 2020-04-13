@@ -1,20 +1,49 @@
 import React from "react";
-import { Paper, List, ListItem } from "@material-ui/core";
+import {
+  Paper,
+  List,
+  ListItem,
+  Card,
+  CardHeader,
+  CardContent,
+  Typography,
+} from "@material-ui/core";
+
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 
 import styles from "../styles/StudentDashboard.css";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    overflow: "auto",
+  },
+}));
+
 export default function StudentRequestsQueue(props) {
+  const classes = useStyles();
   return (
-    <Paper style={(styles.paper, styles.fixedHeight)}>
-      <List>
-        {props.unconfirmedRequests
-          ? props.unconfirmedRequests.map((i) => (
-              <ListItem key={i.mentor_id}>
-                {i.name} {i.level_name} {i.email} {i.firstName} {i.lastName}
-              </ListItem>
-            ))
-          : ""}
-      </List>
-    </Paper>
+    <div
+      style={(styles.fixedHeight, styles.requеstsList)}
+      className={classes.root}
+    >
+      {props.unconfirmedRequests ? (
+        props.unconfirmedRequests.map((i) => (
+          <Card key={i.skill_id}>
+            <CardHeader title={i.name} />
+            <CardContent>
+              <Typography variant="body2">
+                {i.email} {i.firstName} {i.lastName}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        <Card>
+          <CardContent>
+            Here you can see unconfirmed requests to mentor
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
