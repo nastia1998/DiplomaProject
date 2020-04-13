@@ -133,6 +133,18 @@ class userskillController {
       return error.message;
     }
   }
+
+  static async getConfirmedRequests(req, res) {
+    try {
+      const { user_id } = req.params;
+      const confirmedRequests = await userskillService.getConfirmedRequests(
+        user_id
+      );
+      return res.status(200).send(confirmedRequests);
+    } catch (error) {
+      return error.message;
+    }
+  }
 }
 
 export default userskillController;

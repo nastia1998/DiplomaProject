@@ -12,10 +12,13 @@ const {
   getAllRequests,
   approveRequest,
   getUnconfirmedRequests,
+  getUserSkillWithByIdWithInfo,
+  getConfirmedRequests,
 } = userskillController;
 
 const router = express.Router();
 
+router.get("/:userskill_id", getUserSkillWithByIdWithInfo);
 router.get("/users/:user_id", getUserSkillsByUserId);
 router.get(
   "/potentialmentors/:role",
@@ -23,8 +26,9 @@ router.get(
   // accessControl.grantAccess("readAny", "student"),
   getPotentialMentors
 );
-router.get("/:mentor_id/requests", getAllRequests);
+router.get("/:user_id/requests", getAllRequests);
 router.get("/:user_id/requests/unconfirmed", getUnconfirmedRequests);
+router.get("/:user_id/requests/confirmed", getConfirmedRequests);
 router.post("/requests", sendRequestToMentor);
 router.post("/:userskill_id", approveUserSkill);
 router.post("/", addUserSkill);
