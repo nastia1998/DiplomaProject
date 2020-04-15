@@ -10,8 +10,11 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 
+import { Alert } from "@material-ui/lab";
+
 import styles from "../styles/SignUpIn.css.js";
 import axios from "axios";
+import { Snackbar } from "@material-ui/core";
 
 export default function SignIn(props) {
   let history = useHistory();
@@ -66,8 +69,9 @@ export default function SignIn(props) {
             break;
         }
       } catch (e) {
-        console.log(e);
-        alert("Authorization failed. Check your input values!");
+        props.handleShowMessage(
+          "Authorization failed. Check your input values!"
+        );
       }
     }
   };
@@ -127,6 +131,16 @@ export default function SignIn(props) {
           </Grid>
         </form>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={props.openMessage}
+        autoHideDuration={6000}
+        onClose={props.handleCloseMessage}
+      >
+        <Alert severity="error" onClose={props.handleCloseMessage}>
+          {props.messageText}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

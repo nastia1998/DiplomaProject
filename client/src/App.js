@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import NavBar from "./components/NavBar";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
-import Profile from "./components/Profile";
 import ManagerDashboard from "./components/ManagerDashboard";
 import StudentDashboard from "./components/StudentDashboard";
 import MentorDashboard from "./components/MentorDashboard";
@@ -26,12 +25,23 @@ function Copyright() {
   );
 }
 export default function App() {
-  const [isLogin, setIsLogin] = React.useState(
-    localStorage.getItem("loggedIn")
-  );
+  const [isLogin, setIsLogin] = useState(localStorage.getItem("loggedIn"));
+  const [openMessage, setOpenMessage] = useState(false);
+  const [messageText, setMessageText] = useState("");
 
   const handleLogin = (e) => setIsLogin(true);
 
+  const handleShowMessage = (messText) => {
+    setOpenMessage(true);
+    setMessageText(messText);
+  };
+
+  const handleCloseMessage = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenMessage(false);
+  };
   return (
     <div>
       <Router>
@@ -41,16 +51,17 @@ export default function App() {
           exact
           path="/"
           render={(props) => (
-            <SignIn {...props} handleLogin={(e) => handleLogin(e)} />
+            <SignIn
+              {...props}
+              openMessage={openMessage}
+              messageText={messageText}
+              handleLogin={(e) => handleLogin(e)}
+              handleShowMessage={(e) => handleShowMessage(e)}
+              handleCloseMessage={(e, r) => handleCloseMessage(e, r)}
+            />
           )}
         />
         <Route name="signup" exact path="/signup" component={SignUp} />
-        {/* <Route
-          name="profile"
-          exact
-          path="/profile"
-          render={props => <Profile {...props} isLogin={isLogin} />}
-        /> */}
         <Route
           name="managerdashboard"
           exact
