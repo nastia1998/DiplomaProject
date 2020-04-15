@@ -3,17 +3,20 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
+import { Paper } from "@material-ui/core";
 
-import styles from "../styles/ManagerDashboard.css";
+import styles from "../styles/MentorDashboard.css";
 
 import MentorRequestsQueue from "./MentorRequestsQueue";
 import FullInfoRequest from "./FullInfoRequest";
+import StudentsList from "./StudentsList";
 
 export default function MentorDashboard() {
   const [mentorInfo, setMentorInfo] = useState([]);
   const [requestsList, setRequestsList] = useState([]);
   const [fullInfoRequest, setFullInfoRequest] = useState([]);
   const [studentSkills, setStudentSkills] = useState([]);
+  const [studentsList, setStudentsList] = useState([]);
 
   async function fetchMentorInfo() {
     const { data } = await axios.get("http://localhost:3000/api/v1/users/me", {
@@ -67,9 +70,36 @@ export default function MentorDashboard() {
     );
   }
 
+  async function getStudentsList() {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/v1/userskills/${localStorage.getItem(
+        "userId"
+      )}/students`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setStudentsList(data);
+  }
+
+  async function approveSkill(userskill_id) {
+    const { data } = await axios.put(
+      `http://localhost:3000/api/v1/userskills/${userskill_id}/skill`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    getStudentsList();
+  }
+
   useEffect(() => {
     fetchRequestsList();
     fetchMentorInfo();
+    getStudentsList();
   }, []);
 
   return (
@@ -78,7 +108,7 @@ export default function MentorDashboard() {
       <main style={styles.content}>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={12} lg={5}>
+            <Grid item xs={12} md={6} lg={6}>
               <MentorRequestsQueue
                 mentorInfo={mentorInfo}
                 requestsList={requestsList}
@@ -87,11 +117,17 @@ export default function MentorDashboard() {
                 }
               />
             </Grid>
-            <Grid item xs={12} md={12} lg={7}>
+            <Grid item xs={12} md={6} lg={6}>
               <FullInfoRequest
                 fullInfoRequest={fullInfoRequest}
                 studentSkills={studentSkills}
                 approveRequest={(request_id) => approveRequest(request_id)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <StudentsList
+                studentsList={studentsList}
+                approveSkill={(userskill_id) => approveSkill(userskill_id)}
               />
             </Grid>
           </Grid>

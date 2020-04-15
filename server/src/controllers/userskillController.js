@@ -155,6 +155,16 @@ class userskillController {
       return error.message;
     }
   }
+
+  static async getStudetsForMentor(req, res) {
+    try {
+      const { user_id } = req.params;
+      const students = await userskillService.getStudetsForMentor(user_id);
+      return res.status(200).send(students);
+    } catch (error) {
+      return error.message;
+    }
+  }
 }
 
 export default userskillController;
