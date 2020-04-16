@@ -25,6 +25,19 @@ export default function FullInfoRequest(props) {
       userskillid = e.target.id;
     }
     props.approveRequest(+userskillid);
+    props.getStudentsList();
+    props.fetchRequestsList();
+  };
+
+  const handleReject = (e) => {
+    let userskillid;
+    if (!e.target.id) {
+      userskillid = e.target.closest("button").id;
+    } else {
+      userskillid = e.target.id;
+    }
+    props.rejectRequest(+userskillid);
+    props.fetchRequestsList();
   };
 
   return (
@@ -39,11 +52,13 @@ export default function FullInfoRequest(props) {
                     {i.firstName ? i.firstName.substring(0, 1) : "N"}
                   </Avatar>
                 </ListItemIcon>
-                {i.email} {i.firstName} {i.lastName}
+                <ListItemText>
+                  {i.email} {i.firstName} {i.lastName}
+                </ListItemText>
                 <IconButton id={i.id} onClick={handleApprove}>
                   <ThumbUpAltOutlinedIcon>Approve</ThumbUpAltOutlinedIcon>
                 </IconButton>
-                <IconButton id={i.id}>
+                <IconButton id={i.id} onClick={handleReject}>
                   <ThumbDownAltOutlinedIcon>Reject</ThumbDownAltOutlinedIcon>
                 </IconButton>
               </ListItem>
@@ -54,7 +69,8 @@ export default function FullInfoRequest(props) {
           ? props.studentSkills.map((i) => (
               <ListItem key={i.id}>
                 <ListItemText>
-                  {i.name} {i.level_name} {i.time_level}{" "}
+                  {i.name} {i.level_name} {i.time_level}
+                  {" month "}
                 </ListItemText>
                 {i.is_approved_skill ? "Approved" : "Not approved"}
               </ListItem>

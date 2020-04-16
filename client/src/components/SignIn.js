@@ -41,7 +41,7 @@ export default function SignIn(props) {
       password,
     };
     if (!body.email || !body.password) {
-      alert("Email and password are required!");
+      props.handleShowMessage("error", "Email and password are required!");
     } else {
       try {
         const { data } = await axios.post(
@@ -70,6 +70,7 @@ export default function SignIn(props) {
         }
       } catch (e) {
         props.handleShowMessage(
+          "error",
           "Authorization failed. Check your input values!"
         );
       }
@@ -137,7 +138,7 @@ export default function SignIn(props) {
         autoHideDuration={6000}
         onClose={props.handleCloseMessage}
       >
-        <Alert severity="error" onClose={props.handleCloseMessage}>
+        <Alert severity={props.severity} onClose={props.handleCloseMessage}>
           {props.messageText}
         </Alert>
       </Snackbar>

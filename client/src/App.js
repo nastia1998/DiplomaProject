@@ -28,11 +28,14 @@ export default function App() {
   const [isLogin, setIsLogin] = useState(localStorage.getItem("loggedIn"));
   const [openMessage, setOpenMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
+  const [severity, setSeverity] = useState("");
 
   const handleLogin = (e) => setIsLogin(true);
 
-  const handleShowMessage = (messText) => {
+  const handleShowMessage = (severity, messText) => {
+    console.log(severity);
     setOpenMessage(true);
+    setSeverity(severity);
     setMessageText(messText);
   };
 
@@ -54,9 +57,10 @@ export default function App() {
             <SignIn
               {...props}
               openMessage={openMessage}
+              severity={severity}
               messageText={messageText}
               handleLogin={(e) => handleLogin(e)}
-              handleShowMessage={(e) => handleShowMessage(e)}
+              handleShowMessage={(s, e) => handleShowMessage(s, e)}
               handleCloseMessage={(e, r) => handleCloseMessage(e, r)}
             />
           )}
@@ -66,7 +70,16 @@ export default function App() {
           name="managerdashboard"
           exact
           path="/managerdashboard"
-          component={ManagerDashboard}
+          render={(props) => (
+            <ManagerDashboard
+              {...props}
+              openMessage={openMessage}
+              severity={severity}
+              messageText={messageText}
+              handleShowMessage={(s, e) => handleShowMessage(s, e)}
+              handleCloseMessage={(e, r) => handleCloseMessage(e, r)}
+            />
+          )}
         />
         <Route
           name="studentdashboard"

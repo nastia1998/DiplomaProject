@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import { useHistory } from "react-router-dom";
 
 import styles from "../styles/StudentDashboard.css";
 import axios from "axios";
@@ -9,8 +11,11 @@ import axios from "axios";
 import Profile from "./Profile";
 import StudentRequestsQueue from "./StudentRequestsQueue";
 import ConfirmedRequestsList from "./ConfirmedRequestsList";
+import { IconButton, Tooltip, Typography } from "@material-ui/core";
 
-export default function Dashboard() {
+export default function StudentDashboard() {
+  let history = useHistory();
+
   const [studentInfo, setStudentInfo] = useState([]);
   const [studentSkills, setStundentSkills] = useState([]);
   const [availableSkills, setAvailableSkills] = useState([]);
@@ -19,12 +24,22 @@ export default function Dashboard() {
   const [confirmedRequests, setConfirmedRequests] = useState([]);
 
   async function fetchStudentInfo() {
-    const { data } = await axios.get("http://localhost:3000/api/v1/users/me", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    setStudentInfo(data);
+    try {
+      const { data } = await axios.get(
+        "http://localhost:3000/api/v1/users/me",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setStudentInfo(data);
+    } catch (error) {
+      if (+error.response.status === 401) {
+        localStorage.clear();
+        history.push("/");
+      }
+    }
   }
 
   async function fetchStudentSkills() {
@@ -33,12 +48,6 @@ export default function Dashboard() {
         "userId"
       )}`
     );
-    // const res = [];
-    // Object.values(data).map((i) => {
-    //   const t = Object.values(i); //Skill[i]
-    //   res.push(t[0]);
-    // });
-    // setStundentSkills(res);
     setStundentSkills(data);
   }
 
@@ -133,6 +142,10 @@ export default function Dashboard() {
     fetchStudentSkills();
   }
 
+  const handleGoToMentorDashboard = () => {
+    history.push("/mentordashboard");
+  };
+
   useEffect(() => {
     fetchStudentInfo();
     fetchStudentSkills();
@@ -146,7 +159,13 @@ export default function Dashboard() {
   return (
     <div style={styles.root}>
       <CssBaseline />
+      <Tooltip title="Go to mentor dashboard">
+        <IconButton onClick={handleGoToMentorDashboard}>
+          <KeyboardBackspaceIcon />
+        </IconButton>
+      </Tooltip>
       <main style={styles.content}>
+        <Typography variant="h6">Student dashboard</Typography>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={5}>

@@ -59,19 +59,16 @@ class UserSkillService {
 
   static async getPotentialMentors() {
     try {
-      const potentialMentors = await db.UserSkill.findAll({
-        where: { is_approved_skill: true, skill_id: { [Op.ne]: null } },
-        include: [
-          {
-            model: db.Skill,
-            where: { level_name: "senior" },
-          },
-          { model: db.User },
-        ],
-      });
-
-      const result = _.uniqBy(potentialMentors, "user_id");
-      return result;
+      return await db.sequelize.query(
+        'select distinct on (u.id) u.id, us.id as userskill_id, u.email, u."firstName", u."lastName", u."middleName", s.name ' +
+          'from "UserSkills" as us ' +
+          'join "Users" as u on us.user_id = u.id ' +
+          'join "Skills" as s on us.skill_id = s.id ' +
+          "where us.is_approved_skill = true and " +
+          "s.level_name = 'senior' and " +
+          'u.id not in (select user_id from "Mentors")',
+        { replacements: {}, type: QueryTypes.SELECT }
+      );
     } catch (error) {
       return error.message;
     }

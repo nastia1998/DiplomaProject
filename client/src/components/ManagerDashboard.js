@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import styles from "../styles/ManagerDashboard.css";
 import axios from "axios";
@@ -9,22 +11,30 @@ import axios from "axios";
 import SkillsTable from "./SkillsTable";
 import MentorsTable from "./MentorsTable";
 
-export default function Dashboard() {
+export default function ManagerDashboard(props) {
+  let history = useHistory();
   const [skillsList, setSkillsList] = useState([]);
   const [mentorsList, setMentorsList] = useState([]);
   const [mentorsSkills, setMentorsSkills] = useState([]);
   const [studentsList, setStudentsList] = useState([]);
 
   async function fetchSkillsData() {
-    const { data } = await axios.get(
-      "http://localhost:3000/api/v1/skills/manager",
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    try {
+      const { data } = await axios.get(
+        "http://localhost:3000/api/v1/skills/manager",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setSkillsList(data);
+    } catch (error) {
+      if (+error.response.status === 401) {
+        localStorage.clear();
+        history.push("/");
       }
-    );
-    setSkillsList(data);
+    }
   }
 
   async function fetchMentorsData() {
@@ -60,7 +70,7 @@ export default function Dashboard() {
 
   async function fetchStudentsData() {
     const { data } = await axios.get(
-      "http://localhost:3000/api/v1/users/potentialmentors/manager",
+      "http://localhost:3000/api/v1/userskills/potentialmentors/manager",
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -87,6 +97,7 @@ export default function Dashboard() {
   return (
     <div style={styles.root}>
       <CssBaseline />
+
       <main style={styles.content}>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>
@@ -95,6 +106,11 @@ export default function Dashboard() {
                 skillsList={skillsList}
                 updateSkillsList={() => updateSkillsList()}
                 setSkillsList={(data) => setSkillsList(data)}
+                openMessage={props.openMessage}
+                severity={props.severity}
+                messageText={props.messageText}
+                handleShowMessage={(s, e) => props.handleShowMessage(s, e)}
+                handleCloseMessage={(e, r) => props.handleCloseMessage(e, r)}
               />
             </Grid>
             <Grid item xs={12} md={12} lg={6}>
@@ -107,6 +123,11 @@ export default function Dashboard() {
                 updateStudentsList={() => updateStudentsList()}
                 fetchMentorsSkillsData={fetchMentorsSkillsData}
                 updateMentorsSkills={() => updateMentorsSkills()}
+                openMessage={props.openMessage}
+                severity={props.severity}
+                messageText={props.messageText}
+                handleShowMessage={(s, e) => props.handleShowMessage(s, e)}
+                handleCloseMessage={(e, r) => props.handleCloseMessage(e, r)}
               />
             </Grid>
           </Grid>

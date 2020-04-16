@@ -24,6 +24,8 @@ export default function StudentsList(props) {
       userskillid = e.target.id;
     }
     props.approveSkill(+userskillid);
+    props.getStudentsList();
+    props.fetchRequestsList();
   };
 
   return (

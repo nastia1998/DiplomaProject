@@ -3,7 +3,15 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
-import { Paper } from "@material-ui/core";
+import {
+  Paper,
+  Button,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
+import TrendingFlatIcon from "@material-ui/icons/TrendingFlat";
+import { useHistory } from "react-router-dom";
 
 import styles from "../styles/MentorDashboard.css";
 
@@ -12,6 +20,8 @@ import FullInfoRequest from "./FullInfoRequest";
 import StudentsList from "./StudentsList";
 
 export default function MentorDashboard() {
+  let history = useHistory();
+
   const [mentorInfo, setMentorInfo] = useState([]);
   const [requestsList, setRequestsList] = useState([]);
   const [fullInfoRequest, setFullInfoRequest] = useState([]);
@@ -19,12 +29,22 @@ export default function MentorDashboard() {
   const [studentsList, setStudentsList] = useState([]);
 
   async function fetchMentorInfo() {
-    const { data } = await axios.get("http://localhost:3000/api/v1/users/me", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    setMentorInfo(data);
+    try {
+      const { data } = await axios.get(
+        "http://localhost:3000/api/v1/users/me",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setMentorInfo(data);
+    } catch (error) {
+      if (+error.response.status === 401) {
+        localStorage.clear();
+        history.push("/");
+      }
+    }
   }
 
   async function fetchRequestsList() {
@@ -59,9 +79,20 @@ export default function MentorDashboard() {
     setFullInfoRequest(newRequestsList);
   }
 
-  async function approveRequest(req_id) {
+  async function approveRequest(userskill_id) {
     const { data } = axios.put(
-      `http://localhost:3000/api/v1/userskills/${req_id}`,
+      `http://localhost:3000/api/v1/userskills/${userskill_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+  }
+
+  async function rejectRequest(userskill_id) {
+    await axios.delete(
+      `http://localhost:3000/api/v1/userskills/${userskill_id}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -93,8 +124,11 @@ export default function MentorDashboard() {
         },
       }
     );
-    getStudentsList();
   }
+
+  const handleGoToStudentDashboard = () => {
+    history.push("/studentdashboard");
+  };
 
   useEffect(() => {
     fetchRequestsList();
@@ -105,7 +139,13 @@ export default function MentorDashboard() {
   return (
     <div style={styles.root}>
       <CssBaseline />
+      <Tooltip title="Go to student dashboard">
+        <IconButton onClick={handleGoToStudentDashboard}>
+          <TrendingFlatIcon />
+        </IconButton>
+      </Tooltip>
       <main style={styles.content}>
+        <Typography variant="h6">Mentor dashboard</Typography>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={6}>
@@ -121,13 +161,18 @@ export default function MentorDashboard() {
               <FullInfoRequest
                 fullInfoRequest={fullInfoRequest}
                 studentSkills={studentSkills}
-                approveRequest={(request_id) => approveRequest(request_id)}
+                approveRequest={(userskill_id) => approveRequest(userskill_id)}
+                rejectRequest={(userskill_id) => rejectRequest(userskill_id)}
+                getStudentsList={() => getStudentsList()}
+                fetchRequestsList={() => fetchRequestsList()}
               />
             </Grid>
             <Grid item xs={12}>
               <StudentsList
                 studentsList={studentsList}
                 approveSkill={(userskill_id) => approveSkill(userskill_id)}
+                getStudentsList={getStudentsList}
+                fetchRequestsList={fetchRequestsList}
               />
             </Grid>
           </Grid>

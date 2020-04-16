@@ -79,7 +79,7 @@ class MentorService {
         attributes: [],
         where: {
           user_id: mentorWithUserInfo.User.id,
-          approved: true,
+          is_approved_skill: true,
           skill_id: { [Op.ne]: null },
         },
         include: [

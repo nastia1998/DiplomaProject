@@ -10,8 +10,10 @@ import {
   Toolbar,
   TableFooter,
   TablePagination,
-  NativeSelect
+  NativeSelect,
+  Snackbar,
 } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import IconButton from "@material-ui/core/IconButton";
@@ -37,20 +39,33 @@ const columns = [
   { id: "name", label: "Name", minWidth: 10, align: "center" },
   { id: "level", label: "Level name", minWidth: 15, align: "center" },
   { id: "time", label: "Time for level", minWidth: 10, align: "center" },
-  { id: "description", label: "Description", minWidth: 20, align: "center" }
+  { id: "description", label: "Description", minWidth: 20, align: "center" },
 ];
 
 const options = [
   { id: 1, label: "junior" },
   { id: 2, label: "middle" },
-  { id: 3, label: "senior" }
+  { id: 3, label: "senior" },
 ];
 
-const useStyles1 = makeStyles(theme => ({
+const timeLevelOptions = [
+  { id: 1, label: 1 },
+  { id: 2, label: 2 },
+  { id: 3, label: 3 },
+  { id: 4, label: 4 },
+  { id: 5, label: 5 },
+  { id: 6, label: 6 },
+  { id: 7, label: 7 },
+  { id: 8, label: 8 },
+  { id: 9, label: 9 },
+  { id: 10, label: 10 },
+];
+
+const useStyles1 = makeStyles((theme) => ({
   root: {
     flexShrink: 0,
-    marginLeft: theme.spacing(2.5)
-  }
+    marginLeft: theme.spacing(2.5),
+  },
 }));
 
 function TablePaginationActions(props) {
@@ -58,19 +73,19 @@ function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onChangePage } = props;
 
-  const handleFirstPageButtonClick = event => {
+  const handleFirstPageButtonClick = (event) => {
     onChangePage(event, 0);
   };
 
-  const handleBackButtonClick = event => {
+  const handleBackButtonClick = (event) => {
     onChangePage(event, page - 1);
   };
 
-  const handleNextButtonClick = event => {
+  const handleNextButtonClick = (event) => {
     onChangePage(event, page + 1);
   };
 
-  const handleLastPageButtonClick = event => {
+  const handleLastPageButtonClick = (event) => {
     onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
 
@@ -119,18 +134,19 @@ function TablePaginationActions(props) {
 TablePaginationActions.propTypes = {
   count: PropTypes.number.isRequired,
   onChangePage: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired
+  page: PropTypes.number.isRequired,
   // rowsPerPage: PropTypes.number.isRequired
 };
 
 const useStyles2 = makeStyles({
   table: {
-    minWidth: 500
-  }
+    minWidth: 500,
+  },
 });
 export default function SkillsTable(props) {
   const [isEdit, setIsEdit] = useState(false);
   const [levelName, setLevelName] = useState(options[0].label);
+  const [levelTime, setLevelTime] = useState(timeLevelOptions[0].label);
 
   const classes = useStyles2();
   const [page, setPage] = React.useState(0);
@@ -155,7 +171,7 @@ export default function SkillsTable(props) {
     return index;
   };
 
-  const handleEditableRow = editRow => {
+  const handleEditableRow = (editRow) => {
     const skillTable = document.getElementsByClassName("skillsTable")[0];
     const index = findIndex(skillTable, editRow);
     const row = skillTable.rows[index];
@@ -163,21 +179,31 @@ export default function SkillsTable(props) {
 
     if (editRow.edit) {
       if (editRow.id === 0) {
-        addSkill(
-          row.cells[1].innerHTML,
-          levelName,
-          row.cells[3].innerHTML,
-          row.cells[4].innerHTML
-        );
+        if (!row.cells[1].innerHTML || !row.cells[3].innerHTML) {
+          props.handleShowMessage("error", "Please, fill in all the fields!");
+        } else {
+          addSkill(
+            row.cells[1].innerHTML,
+            levelName,
+            levelTime,
+            row.cells[4].innerHTML
+          );
+          row.contentEditable = "false";
+        }
       } else {
-        updateSkillInfo(
-          editRow.id,
-          row.cells[1].innerHTML,
-          levelName,
-          row.cells[3].innerHTML,
-          row.cells[4].innerHTML
-        );
+        if (!row.cells[1].innerHTML || !row.cells[3].innerHTML) {
+          props.handleShowMessage("error", "Please, fill in all the fields!");
+        } else {
+          updateSkillInfo(
+            editRow.id,
+            row.cells[1].innerHTML,
+            levelName,
+            levelTime,
+            row.cells[4].innerHTML
+          );
+        }
       }
+      props.updateSkillsList();
       row.contentEditable = "false";
     } else {
       row.contentEditable = "true";
@@ -191,26 +217,28 @@ export default function SkillsTable(props) {
       name: n,
       level_name: l,
       time_level: t,
-      description: d
+      description: d,
     };
     const { data } = await axios.post(
       "http://localhost:3000/api/v1/skills/manager",
       body,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     if (data) {
+      props.handleShowMessage("info", "Skill is added successfully!");
       props.updateSkillsList();
     }
   };
-  const updateSkillInfo = async (skill_id, n, l, t) => {
+  const updateSkillInfo = async (skill_id, n, l, t, d) => {
     const body = {
       name: n,
       level_name: l,
-      time_level: parseInt(t)
+      time_level: +t,
+      description: d,
     };
     console.log(body);
     const { data } = await axios.put(
@@ -218,19 +246,18 @@ export default function SkillsTable(props) {
       body,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
-    if (data) {
-      props.updateSkillsList();
-    }
+    props.handleShowMessage("info", "Skill is updated successfully!");
+    props.updateSkillsList();
   };
 
   const handleAddRow = async () => {
     const copyRow = {
       id: 0,
-      key: 0
+      key: 0,
     };
 
     copyRow.edit = copyRow.edit || true;
@@ -238,20 +265,25 @@ export default function SkillsTable(props) {
     copyRow.contentEditable = "true";
   };
 
-  const handleDeleteRow = async id => {
+  const handleDeleteRow = async (id) => {
     const { data } = await axios.delete(
       `http://localhost:3000/api/v1/skills/${id}/manager`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
+    props.handleShowMessage("info", "Skill is deleted successfully!");
     props.updateSkillsList();
   };
 
-  const handleChangeLevel = event => {
+  const handleChangeLevel = (event) => {
     setLevelName(event.target.value);
+  };
+
+  const handleChangeTimeLevel = (event) => {
+    setLevelTime(event.target.value);
   };
 
   return (
@@ -274,7 +306,7 @@ export default function SkillsTable(props) {
         >
           <TableHead>
             <TableRow>
-              {columns.map(column => (
+              {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
@@ -292,7 +324,7 @@ export default function SkillsTable(props) {
                   page * rowsPerPage + rowsPerPage
                 )
               : props.skillsList
-            ).map(row => (
+            ).map((row) => (
               <TableRow
                 id={row.id}
                 key={row.id}
@@ -332,7 +364,7 @@ export default function SkillsTable(props) {
                       value={levelName}
                       onChange={handleChangeLevel}
                     >
-                      {options.map(item => (
+                      {options.map((item) => (
                         <option key={item.id} value={item.label}>
                           {item.label}
                         </option>
@@ -342,7 +374,22 @@ export default function SkillsTable(props) {
                     row.level_name
                   )}
                 </TableCell>
-                <TableCell align="center">{row.time_level}</TableCell>
+                <TableCell align="center">
+                  {row.edit === true ? (
+                    <NativeSelect
+                      value={levelTime}
+                      onChange={handleChangeTimeLevel}
+                    >
+                      {timeLevelOptions.map((item) => (
+                        <option key={item.id} value={item.label}>
+                          {item.label}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  ) : (
+                    row.time_level
+                  )}
+                </TableCell>
                 <TableCell align="center">{row.description}</TableCell>
               </TableRow>
             ))}
@@ -367,6 +414,16 @@ export default function SkillsTable(props) {
           </TableFooter>
         </Table>
       </TableContainer>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={props.openMessage}
+        autoHideDuration={6000}
+        onClose={props.handleCloseMessage}
+      >
+        <Alert severity={props.severity} onClose={props.handleCloseMessage}>
+          {props.messageText}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 }

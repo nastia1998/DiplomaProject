@@ -14,8 +14,10 @@ import {
   NativeSelect,
   Dialog,
   ListItem,
-  List
+  List,
+  Snackbar,
 } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import CloseIcon from "@material-ui/icons/Close";
@@ -41,14 +43,13 @@ import styles from "../styles/ManagerDashboard.css";
 const columns = [
   { id: "action", label: "Action", minWidth: 20, align: "center" },
   { id: "info", label: "Information", minWidth: 20, align: "center" },
-  { id: "status", label: "Status", minWidth: 20, align: "center" }
 ];
 
-const useStyles1 = makeStyles(theme => ({
+const useStyles1 = makeStyles((theme) => ({
   root: {
     flexShrink: 0,
-    marginLeft: theme.spacing(2.5)
-  }
+    marginLeft: theme.spacing(2.5),
+  },
 }));
 
 function TablePaginationActions(props) {
@@ -56,19 +57,19 @@ function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onChangePage } = props;
 
-  const handleFirstPageButtonClick = event => {
+  const handleFirstPageButtonClick = (event) => {
     onChangePage(event, 0);
   };
 
-  const handleBackButtonClick = event => {
+  const handleBackButtonClick = (event) => {
     onChangePage(event, page - 1);
   };
 
-  const handleNextButtonClick = event => {
+  const handleNextButtonClick = (event) => {
     onChangePage(event, page + 1);
   };
 
-  const handleLastPageButtonClick = event => {
+  const handleLastPageButtonClick = (event) => {
     onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
 
@@ -117,30 +118,30 @@ function TablePaginationActions(props) {
 TablePaginationActions.propTypes = {
   count: PropTypes.number.isRequired,
   onChangePage: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired
+  page: PropTypes.number.isRequired,
   // rowsPerPage: PropTypes.number.isRequired
 };
 
 const useStyles2 = makeStyles({
   table: {
-    minWidth: 500
-  }
+    minWidth: 500,
+  },
 });
 
-const useStyles3 = theme => ({
+const useStyles3 = (theme) => ({
   root: {
     margin: 0,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   closeButton: {
     position: "absolute",
     right: theme.spacing(1),
     top: theme.spacing(1),
-    color: theme.palette.grey[500]
-  }
+    color: theme.palette.grey[500],
+  },
 });
 
-const DialogTitle = withStyles(useStyles3)(props => {
+const DialogTitle = withStyles(useStyles3)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
@@ -157,14 +158,15 @@ const DialogTitle = withStyles(useStyles3)(props => {
     </MuiDialogTitle>
   );
 });
-const DialogContent = withStyles(theme => ({
+const DialogContent = withStyles((theme) => ({
   root: {
-    padding: theme.spacing(2)
-  }
+    padding: theme.spacing(2),
+  },
 }))(MuiDialogContent);
 
 export default function MentorsTable(props) {
   const [isEdit, setIsEdit] = useState(false);
+  const [deleteFlag, setDeleteFlag] = useState(false);
   const [studentVal, setStudentVal] = useState(0);
 
   const [open, setOpen] = React.useState(false);
@@ -192,7 +194,7 @@ export default function MentorsTable(props) {
     return index;
   };
 
-  const handleEditableRow = editRow => {
+  const handleEditableRow = (editRow) => {
     const mentorTable = document.getElementsByClassName("mentorsTable")[0];
     const index = findIndex(mentorTable, editRow);
     const row = mentorTable.rows[index];
@@ -200,6 +202,7 @@ export default function MentorsTable(props) {
     if (editRow.edit) {
       if (editRow.id === 0) {
         addMentor(studentVal);
+        props.handleShowMessage("info", "Mentor is added successfully!");
       }
       if (row) row.contentEditable = "false";
     } else {
@@ -210,17 +213,17 @@ export default function MentorsTable(props) {
     setIsEdit(editRow.edit);
   };
 
-  const addMentor = async us_id => {
+  const addMentor = async (us_id) => {
     const body = {
-      user_id: us_id
+      user_id: us_id,
     };
     const { data } = await axios.post(
       "http://localhost:3000/api/v1/mentors/manager",
       body,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     if (data) {
@@ -233,7 +236,7 @@ export default function MentorsTable(props) {
     const copyRow = {
       id: 0,
       key: 0,
-      User: { email: "" }
+      User: { email: "" },
     };
 
     copyRow.edit = copyRow.edit || true;
@@ -241,36 +244,37 @@ export default function MentorsTable(props) {
     copyRow.contentEditable = "true";
   };
 
-  const handleDeleteRow = async id => {
+  const handleDeleteRow = async (id) => {
+    setDeleteFlag(true);
     const { data } = await axios.delete(
       `http://localhost:3000/api/v1/mentors/${id}/manager`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     props.updateMentorsList();
     props.updateStudentsList();
+    props.handleShowMessage("info", "Mentor is deleted successfully!");
   };
-  const handleChangeStudent = event => {
+  const handleChangeStudent = (event) => {
     console.log("change", event.target.value);
     setStudentVal(event.target.value);
   };
 
   // ------------------------------------------------ Dialog handlers --------------------------------------------
-  const handleClickOpen = r => {
-    console.log(345, r);
+  const handleClickOpen = (r) => {
     if (!r.edit && r.id !== 0) {
-      console.log(12344444, !r.edit, r.id);
       props.fetchMentorsSkillsData(r.id);
       setOpen(true);
     }
   };
 
-  const handleClose = value => {
+  const handleClose = (value) => {
     props.updateMentorsSkills();
     setOpen(false);
+    setDeleteFlag(false);
   };
 
   return (
@@ -293,7 +297,7 @@ export default function MentorsTable(props) {
         >
           <TableHead>
             <TableRow>
-              {columns.map(column => (
+              {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
@@ -344,11 +348,14 @@ export default function MentorsTable(props) {
                       value={studentVal}
                       onChange={handleChangeStudent}
                     >
-                      {props.studentsList.map
-                        ? props.studentsList.map(item => (
-                            <option key={item.User.id} value={item.User.id}>
-                              {item.User.email} {item.User.firstName}{" "}
-                              {item.User.lastName} {item.User.middleName}
+                      <option aria-label="None" value="">
+                        Not selected
+                      </option>
+                      {props.studentsList
+                        ? props.studentsList.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.email} {item.firstName} {item.lastName}{" "}
+                              {item.middleName}
                             </option>
                           ))
                         : []}
@@ -363,7 +370,6 @@ export default function MentorsTable(props) {
                     row.User.middleName
                   )}
                 </TableCell>
-                <TableCell align="center">{row.status}</TableCell>
               </TableRow>
             ))}
             {emptyRows > 0 && (
@@ -402,6 +408,16 @@ export default function MentorsTable(props) {
           </List>
         </DialogContent>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={props.openMessage}
+        autoHideDuration={6000}
+        onClose={props.handleCloseMessage}
+      >
+        <Alert severity={props.severity} onClose={props.handleCloseMessage}>
+          {props.messageText}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 }
