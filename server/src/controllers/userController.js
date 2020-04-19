@@ -62,6 +62,18 @@ class userController {
     }
   }
 
+  static async getUsers(req, res) {
+    try {
+      const users = await userService.getUsers();
+      users.forEach((element) => {
+        element.password = undefined;
+      });
+      return res.status(200).json(users);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+
   // --------------------------------------- Managers Logic -------------------------------------------------
   static async addManager(req, res) {
     const { email } = req.body;

@@ -12,10 +12,12 @@ const {
   getManagers,
   removeManager,
   getStudents,
+  getUsers,
 } = userController;
 
 const router = express.Router();
 
+router.get("/", getUsers);
 router.get(
   "/:role/managers",
   auth,

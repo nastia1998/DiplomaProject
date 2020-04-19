@@ -35,11 +35,16 @@ import axios from "axios";
 import styles from "../styles/ManagerDashboard.css";
 
 const columns = [
-  { id: "action", label: "Action", minWidth: 10, align: "center" },
+  { id: "action", label: "Action", minWidth: 20, align: "center" },
   { id: "name", label: "Name", minWidth: 10, align: "center" },
   { id: "level", label: "Level name", minWidth: 15, align: "center" },
   { id: "time", label: "Time for level", minWidth: 10, align: "center" },
-  { id: "description", label: "Description", minWidth: 20, align: "center" },
+  // {
+  //   id: "description",
+  //   label: "Description",
+  //   minWidth: 15,
+  //   align: "center",
+  // },
 ];
 
 const options = [
@@ -147,10 +152,12 @@ export default function SkillsTable(props) {
   const [isEdit, setIsEdit] = useState(false);
   const [levelName, setLevelName] = useState(options[0].label);
   const [levelTime, setLevelTime] = useState(timeLevelOptions[0].label);
+  const [description, setDescription] = useState("");
 
   const classes = useStyles2();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(7);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(7);
+  const [pageOptions, setPageOptions] = useState([]);
 
   const emptyRows =
     rowsPerPage -
@@ -163,7 +170,7 @@ export default function SkillsTable(props) {
   const findIndex = (tableElement, row) => {
     let index = -1;
     for (let i = 1; i < tableElement.rows.length; i++) {
-      if (tableElement.rows[i].id == row.id) {
+      if (+tableElement.rows[i].id === +row.id) {
         index = i;
         break;
       }
@@ -172,6 +179,9 @@ export default function SkillsTable(props) {
   };
 
   const handleEditableRow = (editRow) => {
+    setDescription(editRow.description);
+    setLevelName(editRow.level_name);
+    setLevelTime(editRow.time_level);
     const skillTable = document.getElementsByClassName("skillsTable")[0];
     const index = findIndex(skillTable, editRow);
     const row = skillTable.rows[index];
@@ -182,12 +192,7 @@ export default function SkillsTable(props) {
         if (!row.cells[1].innerHTML || !row.cells[3].innerHTML) {
           props.handleShowMessage("error", "Please, fill in all the fields!");
         } else {
-          addSkill(
-            row.cells[1].innerHTML,
-            levelName,
-            levelTime,
-            row.cells[4].innerHTML
-          );
+          addSkill(row.cells[1].innerHTML, levelName, levelTime, description);
           row.contentEditable = "false";
         }
       } else {
@@ -199,7 +204,7 @@ export default function SkillsTable(props) {
             row.cells[1].innerHTML,
             levelName,
             levelTime,
-            row.cells[4].innerHTML
+            description
           );
         }
       }
@@ -240,8 +245,7 @@ export default function SkillsTable(props) {
       time_level: +t,
       description: d,
     };
-    console.log(body);
-    const { data } = await axios.put(
+    await axios.put(
       `http://localhost:3000/api/v1/skills/${skill_id}/manager`,
       body,
       {
@@ -266,14 +270,11 @@ export default function SkillsTable(props) {
   };
 
   const handleDeleteRow = async (id) => {
-    const { data } = await axios.delete(
-      `http://localhost:3000/api/v1/skills/${id}/manager`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    await axios.delete(`http://localhost:3000/api/v1/skills/${id}/manager`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     props.handleShowMessage("info", "Skill is deleted successfully!");
     props.updateSkillsList();
   };
@@ -286,6 +287,9 @@ export default function SkillsTable(props) {
     setLevelTime(event.target.value);
   };
 
+  // const handleChangeDescription = (event) => {
+  //   setDescription(event.target.value);
+  // };
   return (
     <Paper style={(styles.paper, styles.fixedHeight)}>
       <Toolbar>
@@ -310,7 +314,9 @@ export default function SkillsTable(props) {
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{
+                    minWidth: column.minWidth,
+                  }}
                 >
                   {column.label}
                 </TableCell>
@@ -390,7 +396,18 @@ export default function SkillsTable(props) {
                     row.time_level
                   )}
                 </TableCell>
-                <TableCell align="center">{row.description}</TableCell>
+                {/* <TableCell align="center">
+                  {row.edit === true ? (
+                    <TextField
+                      disabled={!row.edit}
+                      value={description}
+                      inputProps={{ maxLength: 20 }}
+                      onChange={handleChangeDescription}
+                    />
+                  ) : (
+                    row.description
+                  )}
+                </TableCell> */}
               </TableRow>
             ))}
             {emptyRows > 0 && (
@@ -403,7 +420,7 @@ export default function SkillsTable(props) {
             <TableRow>
               <TablePagination
                 labelRowsPerPage=""
-                rowsPerPageOptions=""
+                rowsPerPageOptions={pageOptions}
                 count={props.skillsList.length}
                 rowsPerPage={rowsPerPage}
                 page={page}

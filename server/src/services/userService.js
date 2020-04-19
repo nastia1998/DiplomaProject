@@ -2,6 +2,7 @@ import db from "../models";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Sequelize from "sequelize";
+const { Op } = require("sequelize");
 
 class UserService {
   static async addUser(newUser) {
@@ -60,6 +61,16 @@ class UserService {
         throw new Error("Invalid login credentials");
       }
       return user;
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async getUsers() {
+    try {
+      return await db.User.findAll({
+        where: { role: { [Op.or]: ["student", "mentor"] } },
+      });
     } catch (error) {
       return error.message;
     }

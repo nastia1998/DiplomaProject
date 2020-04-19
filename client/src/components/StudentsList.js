@@ -7,14 +7,22 @@ import {
   ListItemText,
   Avatar,
   IconButton,
-  Typography,
   ListSubheader,
 } from "@material-ui/core";
 import ThumbUpAltOutlinedIcon from "@material-ui/icons/ThumbUpAltOutlined";
+import { makeStyles } from "@material-ui/core/styles";
 
 import styles from "../styles/MentorDashboard.css";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    overflow: "auto",
+  },
+}));
+
 export default function StudentsList(props) {
+  const classes = useStyles();
+
   const handleApproveSkill = (e) => {
     console.log(e.target);
     let userskillid;
@@ -24,12 +32,10 @@ export default function StudentsList(props) {
       userskillid = e.target.id;
     }
     props.approveSkill(+userskillid);
-    props.getStudentsList();
-    props.fetchRequestsList();
   };
 
   return (
-    <Paper style={(styles.paper, styles.fixedHeight)}>
+    <Paper style={(styles.paper, styles.fixedHeight)} className={classes.root}>
       <List>
         <ListSubheader>My students</ListSubheader>
         {props.studentsList

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 
 import styles from "../styles/ManagerDashboard.css";
@@ -17,6 +16,8 @@ export default function ManagerDashboard(props) {
   const [mentorsList, setMentorsList] = useState([]);
   const [mentorsSkills, setMentorsSkills] = useState([]);
   const [studentsList, setStudentsList] = useState([]);
+  const [specialSkillsList, setSpecialSkillsList] = useState([]);
+  const [usersList, setUsersList] = useState([]);
 
   async function fetchSkillsData() {
     try {
@@ -29,6 +30,8 @@ export default function ManagerDashboard(props) {
         }
       );
       setSkillsList(data);
+      const specialList = data.filter((i) => i.level_name === "senior");
+      setSpecialSkillsList(specialList);
     } catch (error) {
       if (+error.response.status === 401) {
         localStorage.clear();
@@ -79,14 +82,21 @@ export default function ManagerDashboard(props) {
     );
     setStudentsList(data);
   }
+
   async function resetMentorsSkills() {
     setMentorsSkills([]);
+  }
+
+  async function fetchUsersData() {
+    const { data } = await axios.get(`http://localhost:3000/api/v1/users`);
+    setUsersList(data);
   }
 
   useEffect(() => {
     fetchSkillsData();
     fetchMentorsData();
     fetchStudentsData();
+    fetchUsersData();
   }, []);
 
   const updateSkillsList = () => fetchSkillsData();
@@ -117,11 +127,13 @@ export default function ManagerDashboard(props) {
               <MentorsTable
                 mentorsList={mentorsList}
                 studentsList={studentsList}
+                usersList={usersList}
                 mentorsSkills={mentorsSkills}
+                specialSkillsList={specialSkillsList}
                 setMentorsList={(data) => setMentorsList(data)}
                 updateMentorsList={() => updateMentorsList()}
                 updateStudentsList={() => updateStudentsList()}
-                fetchMentorsSkillsData={fetchMentorsSkillsData}
+                fetchMentorsSkillsData={(id) => fetchMentorsSkillsData(id)}
                 updateMentorsSkills={() => updateMentorsSkills()}
                 openMessage={props.openMessage}
                 severity={props.severity}

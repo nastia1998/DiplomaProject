@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
-  Paper,
   List,
   ListItem,
   Card,
@@ -33,6 +32,8 @@ const StyledRating = withStyles({
 })(Rating);
 
 export default function MentorRequestsQueue(props) {
+  const classes = useStyles();
+
   const handleClick = (e) => {
     let req_id, user_id;
     if (!e.target.id) {
@@ -44,66 +45,68 @@ export default function MentorRequestsQueue(props) {
     }
     props.fetchFullInfoRequest(+req_id, +user_id);
   };
-  const classes = useStyles();
+
   return (
-    <Paper style={(styles.paper, styles.fixedHeight)}>
-      <Card style={(styles.paper, styles.fixedHeight)} className={classes.root}>
-        <CardHeader
-          avatar={
-            <Avatar aria-label="recipe" className={classes.avatar}>
-              {props.mentorInfo.firstName
-                ? props.mentorInfo.firstName.substring(0, 1)
-                : "N"}
-            </Avatar>
-          }
-          title={
-            props.mentorInfo.firstName ||
-            "" + " " + props.mentorInfo.lastName ||
-            "" + " " + props.mentorInfo.middleName ||
-            ""
-          }
-          subheader={props.mentorInfo.email}
-        />
-        <CardContent>
+    <Card style={(styles.paper, styles.fixedHeight)} className={classes.root}>
+      <CardHeader
+        avatar={
+          <Avatar aria-label="recipe" className={classes.avatar}>
+            {props.mentorInfo.firstName
+              ? props.mentorInfo.firstName.substring(0, 1)
+              : "N"}
+          </Avatar>
+        }
+        title={
+          props.mentorInfo.firstName ||
+          "" + " " + props.mentorInfo.lastName ||
+          "" + " " + props.mentorInfo.middleName ||
+          ""
+        }
+        subheader={props.mentorInfo.email}
+      />
+      <CardContent>
+        {props.requestsList.length > 0 ? (
           <List>
             <ListSubheader>Requests</ListSubheader>
-            {props.requestsList
-              ? props.requestsList.map((i) => (
-                  <ListItem
-                    key={i.id}
-                    id={i.id}
-                    userid={i.user_id}
-                    button
-                    onClick={handleClick}
-                  >
-                    <Typography paragraph>
-                      {i.name}
-                      {
-                        {
-                          junior: (
-                            <StyledRating name="1" value={1} max={3} disabled />
-                          ),
-                          middle: (
-                            <StyledRating name="2" value={2} max={3} disabled />
-                          ),
-                          senior: (
-                            <StyledRating name="3" value={3} max={3} disabled />
-                          ),
-                        }[i.level_name]
-                      }
-                      {
-                        {
-                          true: "Finished",
-                          false: "In process",
-                        }[i.is_approved_skill]
-                      }
-                    </Typography>
-                  </ListItem>
-                ))
-              : ""}
+            {props.requestsList.map((i) => (
+              <ListItem
+                key={i.id}
+                id={i.id}
+                userid={i.user_id}
+                button
+                onClick={handleClick}
+              >
+                <Typography paragraph>
+                  {i.name}
+                  {
+                    {
+                      junior: (
+                        <StyledRating name="1" value={1} max={3} disabled />
+                      ),
+                      middle: (
+                        <StyledRating name="2" value={2} max={3} disabled />
+                      ),
+                      senior: (
+                        <StyledRating name="3" value={3} max={3} disabled />
+                      ),
+                    }[i.level_name]
+                  }
+                  {
+                    {
+                      true: "Finished",
+                      false: "In process",
+                    }[i.is_approved_skill]
+                  }
+                </Typography>
+              </ListItem>
+            ))}
           </List>
-        </CardContent>
-      </Card>
-    </Paper>
+        ) : (
+          <Typography variant="body2" color="textSecondary">
+            No requests yet
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
   );
 }

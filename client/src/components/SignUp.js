@@ -23,6 +23,12 @@ export default function SignUp() {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [mname, setMname] = useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [cpasswordError, setCPasswordError] = useState(false);
+  const [errorTextE, setErrorTextE] = useState("");
+  const [errorTextP, setErrorTextP] = useState("");
+  const [errorTextCP, setErrorTextCP] = useState("");
 
   const onChange = (e) => {
     switch (e.target.name) {
@@ -58,10 +64,20 @@ export default function SignUp() {
       lastName: lname,
       middleName: mname,
     };
-    if (!body.email || !body.password) {
-      alert("Email and password are required!");
+    if (!body.email) {
+      setEmailError(true);
+      setErrorTextE("Email is required!");
+    } else if (!body.password) {
+      setPasswordError(true);
+      setErrorTextP("Password is required!");
     } else if (password !== cpassword) {
-      alert("Password and confirm password fields should match!");
+      setPasswordError(true);
+      setCPasswordError(true);
+      setErrorTextP("Fields should match!");
+      setErrorTextCP("Fields should match!");
+    } else if (password.length < 8) {
+      setPasswordError(true);
+      setErrorTextP("Minimal number of symbols is 8");
     } else {
       try {
         const { data } = await axios.post(
@@ -70,9 +86,9 @@ export default function SignUp() {
         );
         if (data.userData) history.push("/");
       } catch (e) {
-        console.log(e.message);
-        if (e.response.status === "400") {
-          alert(e);
+        if (+e.response.status === 400) {
+          setEmailError(true);
+          setErrorTextE("Email is not correct!");
         }
         return e.message;
       }
@@ -101,6 +117,9 @@ export default function SignUp() {
                 name="email"
                 autoComplete="email"
                 onChange={onChange}
+                error={emailError}
+                helperText={errorTextE}
+                inputProps={{ maxLength: 40 }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -114,6 +133,9 @@ export default function SignUp() {
                 id="password"
                 autoComplete="current-password"
                 onChange={onChange}
+                error={passwordError}
+                helperText={errorTextP}
+                inputProps={{ maxLength: 30 }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -127,6 +149,9 @@ export default function SignUp() {
                 id="cpassword"
                 autoComplete="current-password"
                 onChange={onChange}
+                error={cpasswordError}
+                helperText={errorTextCP}
+                inputProps={{ maxLength: 30 }}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -139,6 +164,7 @@ export default function SignUp() {
                 label="First name"
                 autoFocus
                 onChange={onChange}
+                inputProps={{ maxLength: 15 }}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -150,6 +176,7 @@ export default function SignUp() {
                 name="middleName"
                 autoComplete="mname"
                 onChange={onChange}
+                inputProps={{ maxLength: 15 }}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -161,6 +188,7 @@ export default function SignUp() {
                 name="lastName"
                 autoComplete="lname"
                 onChange={onChange}
+                inputProps={{ maxLength: 15 }}
               />
             </Grid>
           </Grid>

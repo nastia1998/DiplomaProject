@@ -165,6 +165,23 @@ class userskillController {
       return error.message;
     }
   }
+
+  static async addApprovedUserSkill(req, res) {
+    try {
+      const { user_id, skill_id } = req.body;
+      const newUserSkill = {
+        user_id: user_id,
+        skill_id: skill_id,
+        is_approved_skill: true,
+      };
+      const userSkill = await userskillService.addApprovedUserSkill(
+        newUserSkill
+      );
+      return res.status(200).send(userSkill);
+    } catch (error) {
+      return error.message;
+    }
+  }
 }
 
 export default userskillController;

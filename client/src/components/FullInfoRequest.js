@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Paper,
-  Grid,
   List,
   ListSubheader,
   ListItem,
@@ -9,14 +8,22 @@ import {
   ListItemIcon,
   Avatar,
   ListItemText,
+  Typography,
 } from "@material-ui/core";
 
 import ThumbUpAltOutlinedIcon from "@material-ui/icons/ThumbUpAltOutlined";
 import ThumbDownAltOutlinedIcon from "@material-ui/icons/ThumbDownAltOutlined";
 
 import styles from "../styles/MentorDashboard.css";
+import { makeStyles } from "@material-ui/core/styles";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    overflow: "auto",
+  },
+}));
 export default function FullInfoRequest(props) {
+  const classes = useStyles();
   const handleApprove = (e) => {
     let userskillid;
     if (!e.target.id) {
@@ -25,8 +32,6 @@ export default function FullInfoRequest(props) {
       userskillid = e.target.id;
     }
     props.approveRequest(+userskillid);
-    props.getStudentsList();
-    props.fetchRequestsList();
   };
 
   const handleReject = (e) => {
@@ -37,14 +42,24 @@ export default function FullInfoRequest(props) {
       userskillid = e.target.id;
     }
     props.rejectRequest(+userskillid);
-    props.fetchRequestsList();
   };
 
   return (
-    <Paper style={(styles.paper, styles.fixedHeight)}>
+    <Paper style={(styles.paper, styles.fixedHeight)} className={classes.root}>
       <List>
-        <ListSubheader>Full info about request</ListSubheader>
-        {props.fullInfoRequest
+        {props.fullInfoRequest.length > 0 ? (
+          <ListSubheader>Full info about request</ListSubheader>
+        ) : (
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            style={{ marginLeft: 15 }}
+          >
+            Select a request to show
+          </Typography>
+        )}
+
+        {props.fullInfoRequest.length > 0
           ? props.fullInfoRequest.map((i) => (
               <ListItem key={i.id}>
                 <ListItemIcon>
@@ -53,7 +68,7 @@ export default function FullInfoRequest(props) {
                   </Avatar>
                 </ListItemIcon>
                 <ListItemText>
-                  {i.email} {i.firstName} {i.lastName}
+                  {i.email} {i.firstName} {i.lastName} {i.name}
                 </ListItemText>
                 <IconButton id={i.id} onClick={handleApprove}>
                   <ThumbUpAltOutlinedIcon>Approve</ThumbUpAltOutlinedIcon>
@@ -64,7 +79,11 @@ export default function FullInfoRequest(props) {
               </ListItem>
             ))
           : ""}
-        <ListSubheader>Skills of the user</ListSubheader>
+        {props.fullInfoRequest.length > 0 ? (
+          <ListSubheader>User skills</ListSubheader>
+        ) : (
+          ""
+        )}
         {props.studentSkills
           ? props.studentSkills.map((i) => (
               <ListItem key={i.id}>

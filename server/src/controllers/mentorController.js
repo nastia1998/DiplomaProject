@@ -10,7 +10,6 @@ class mentorController {
         return res.json("Identifier of user should be set");
       }
       const mentorExist = await mentorService.findMentorByUserId(user_id);
-      console.log(mentorExist);
       if (mentorExist.length === 0) {
         const user = await userService.findUser(user_id);
         user.password = undefined;

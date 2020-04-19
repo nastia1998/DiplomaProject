@@ -16,6 +16,7 @@ import {
   ListItem,
   List,
   Snackbar,
+  Button,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -168,12 +169,15 @@ export default function MentorsTable(props) {
   const [isEdit, setIsEdit] = useState(false);
   const [deleteFlag, setDeleteFlag] = useState(false);
   const [studentVal, setStudentVal] = useState(0);
+  const [skillVal, setSkillVal] = useState(0);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [openUserSkills, setOpenUserSkills] = useState(false);
 
   const classes = useStyles2();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(7);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(7);
+  const [pageOptions, setPageOptions] = useState([]);
 
   const emptyRows =
     rowsPerPage -
@@ -186,7 +190,7 @@ export default function MentorsTable(props) {
   const findIndex = (tableElement, row) => {
     let index = -1;
     for (let i = 1; i < tableElement.rows.length; i++) {
-      if (tableElement.rows[i].id === row.id) {
+      if (+tableElement.rows[i].id === +row.id) {
         index = i;
         break;
       }
@@ -202,9 +206,10 @@ export default function MentorsTable(props) {
     if (editRow.edit) {
       if (editRow.id === 0) {
         addMentor(studentVal);
-        props.handleShowMessage("info", "Mentor is added successfully!");
+        row.contentEditable = "false";
       }
-      if (row) row.contentEditable = "false";
+      props.updateMentorsList();
+      row.contentEditable = "false";
     } else {
       row.contentEditable = "true";
     }
@@ -227,6 +232,7 @@ export default function MentorsTable(props) {
       }
     );
     if (data) {
+      // props.handleShowMessage("info", "Mentor is added successfully!");
       props.updateMentorsList();
       props.updateStudentsList();
     }
@@ -246,21 +252,35 @@ export default function MentorsTable(props) {
 
   const handleDeleteRow = async (id) => {
     setDeleteFlag(true);
-    const { data } = await axios.delete(
-      `http://localhost:3000/api/v1/mentors/${id}/manager`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    await axios.delete(`http://localhost:3000/api/v1/mentors/${id}/manager`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     props.updateMentorsList();
     props.updateStudentsList();
     props.handleShowMessage("info", "Mentor is deleted successfully!");
   };
   const handleChangeStudent = (event) => {
-    console.log("change", event.target.value);
     setStudentVal(event.target.value);
+  };
+
+  const handleChangeSkill = (event) => {
+    setSkillVal(event.target.value);
+  };
+
+  const handleAddUserSkill = async () => {
+    const body = {
+      user_id: studentVal,
+      skill_id: skillVal,
+    };
+    await axios.post(`http://localhost:3000/api/v1/userskills/approved`, body, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    setOpenUserSkills(false);
+    props.updateStudentsList();
   };
 
   // ------------------------------------------------ Dialog handlers --------------------------------------------
@@ -271,10 +291,18 @@ export default function MentorsTable(props) {
     }
   };
 
+  const handleClickOpenUserSkills = () => {
+    setOpenUserSkills(true);
+  };
+
   const handleClose = (value) => {
     props.updateMentorsSkills();
     setOpen(false);
     setDeleteFlag(false);
+  };
+
+  const handleCloseUserSkills = () => {
+    setOpenUserSkills(false);
   };
 
   return (
@@ -287,6 +315,9 @@ export default function MentorsTable(props) {
         <IconButton onClick={() => handleAddRow()}>
           <AddCircleOutlineIcon />
         </IconButton>
+        <Button onClick={() => handleClickOpenUserSkills()}>
+          <Typography component="div">Add skill to user</Typography>
+        </Button>
       </Toolbar>
       <TableContainer>
         <Table
@@ -308,20 +339,15 @@ export default function MentorsTable(props) {
               ))}
             </TableRow>
           </TableHead>
-          <TableBody id="levelsTableBody">
+          <TableBody>
             {(rowsPerPage > 0
               ? props.mentorsList.slice(
                   page * rowsPerPage,
                   page * rowsPerPage + rowsPerPage
                 )
               : props.mentorsList
-            ).map((row, index) => (
-              <TableRow
-                id={row.id}
-                key={row.id}
-                hover
-                onClick={() => handleClickOpen(row)}
-              >
+            ).map((row) => (
+              <TableRow id={row.id} key={row.id} hover>
                 <TableCell id={row.id}>
                   <IconButton
                     hidden={!row.edit}
@@ -342,7 +368,7 @@ export default function MentorsTable(props) {
                     <ClearOutlinedIcon />
                   </IconButton>
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" onClick={() => handleClickOpen(row)}>
                   {row.edit === true ? (
                     <NativeSelect
                       value={studentVal}
@@ -382,8 +408,7 @@ export default function MentorsTable(props) {
             <TableRow>
               <TablePagination
                 labelRowsPerPage=""
-                // rowsPerPageOptions={{ paging: false }}
-                rowsPerPageOptions=""
+                rowsPerPageOptions={pageOptions}
                 count={props.mentorsList.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
@@ -406,6 +431,45 @@ export default function MentorsTable(props) {
           <List>
             <ListItem>{props.mentorsSkills}</ListItem>
           </List>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        onClose={handleCloseUserSkills}
+        open={openUserSkills}
+        aria-labelledby="simple-dialog-title"
+      >
+        <DialogTitle
+          id="customized-dialog-title"
+          onClose={handleCloseUserSkills}
+        >
+          Add skill to user
+        </DialogTitle>
+        <DialogContent
+          dividers
+          style={{ display: "flex", flexDirection: "column" }}
+        >
+          <NativeSelect value={studentVal} onChange={handleChangeStudent}>
+            <option>Select a user to whom to add skill</option>
+            {props.usersList
+              ? props.usersList.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.email} {item.firstName} {item.lastName}{" "}
+                    {item.middleName}
+                  </option>
+                ))
+              : []}
+          </NativeSelect>
+          <NativeSelect value={skillVal} onChange={handleChangeSkill}>
+            <option>Select a skill from the list</option>
+            {props.specialSkillsList
+              ? props.specialSkillsList.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))
+              : []}
+          </NativeSelect>
+          <Button onClick={() => handleAddUserSkill()}>Add</Button>
         </DialogContent>
       </Dialog>
       <Snackbar

@@ -12,7 +12,7 @@ export default {
     overflow: "auto",
   },
   container: {
-    paddingTop: theme.spacing(2),
+    paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
   },
   paper: {
@@ -22,6 +22,6 @@ export default {
     flexDirection: "column",
   },
   fixedHeight: {
-    height: 260,
+    height: 259,
   },
 };

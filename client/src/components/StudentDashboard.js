@@ -154,18 +154,23 @@ export default function StudentDashboard() {
     getConfirmedRequests();
   }, []);
 
-  const updateStudentInfo = () => fetchStudentInfo();
-
   return (
     <div style={styles.root}>
       <CssBaseline />
-      <Tooltip title="Go to mentor dashboard">
-        <IconButton onClick={handleGoToMentorDashboard}>
-          <KeyboardBackspaceIcon />
-        </IconButton>
-      </Tooltip>
+      {localStorage.getItem("role") === "mentor" ? (
+        <Tooltip title="Go to mentor dashboard">
+          <IconButton onClick={handleGoToMentorDashboard}>
+            <KeyboardBackspaceIcon />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        ""
+      )}
+
       <main style={styles.content}>
-        <Typography variant="h6">Student dashboard</Typography>
+        <Typography variant="h6" style={{ marginTop: 5, marginLeft: 15 }}>
+          Student dashboard
+        </Typography>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={5}>

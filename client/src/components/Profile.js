@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   List,
   ListItem,
@@ -13,8 +13,7 @@ import {
 } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 
-import styles from "../styles/StudentDashboard.css";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -42,6 +41,12 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     backgroundColor: "#C7B08B",
   },
+  paper: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "auto",
+    flexDirection: "column",
+  },
 }));
 
 const StyledRating = withStyles({
@@ -51,8 +56,6 @@ const StyledRating = withStyles({
 })(Rating);
 
 export default function Profile(props) {
-  const [mentors, setMentors] = useState(false);
-  const [selSkill, setSelSkill] = useState(0);
   const [open, setOpen] = React.useState(false);
   const [selectedSkillId, setSelectedSkillId] = React.useState(0);
 
@@ -78,7 +81,10 @@ export default function Profile(props) {
   };
 
   return (
-    <Card style={(styles.paper, styles.fixedHeight)} className={classes.root}>
+    <Card
+      style={{ height: expanded ? 503 : 450 }}
+      className={(classes.root, classes.paper)}
+    >
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
@@ -143,46 +149,52 @@ export default function Profile(props) {
         <CardContent>
           <List>
             <Typography variant="h6">Available Skills</Typography>
-            {props.availableSkills.map((avSkill) => (
-              <ListItem key={avSkill.id} className="availskillslist">
-                <Typography paragraph>
-                  {avSkill.name}
-                  {
+            {props.availableSkills.length > 0 ? (
+              props.availableSkills.map((avSkill) => (
+                <ListItem key={avSkill.id} className="availskillslist">
+                  <Typography paragraph>
+                    {avSkill.name}
                     {
-                      junior: (
-                        <StyledRating name="1" value={1} max={3} disabled />
-                      ),
-                      middle: (
-                        <StyledRating name="2" value={2} max={3} disabled />
-                      ),
-                      senior: (
-                        <StyledRating name="3" value={3} max={3} disabled />
-                      ),
-                    }[avSkill.level_name]
-                  }
-                  <button
-                    key={avSkill.id}
-                    id={avSkill.id}
-                    onClick={(e) => handleClickOpen(e)}
-                    className="styledButton"
-                  >
+                      {
+                        junior: (
+                          <StyledRating name="1" value={1} max={3} disabled />
+                        ),
+                        middle: (
+                          <StyledRating name="2" value={2} max={3} disabled />
+                        ),
+                        senior: (
+                          <StyledRating name="3" value={3} max={3} disabled />
+                        ),
+                      }[avSkill.level_name]
+                    }
+                    <button
+                      key={avSkill.id}
+                      id={avSkill.id}
+                      onClick={(e) => handleClickOpen(e)}
+                      className="styledButton"
                     >
-                  </button>
-                </Typography>
-                <MentorsDialog
-                  selectedSkillId={selectedSkillId}
-                  open={open}
-                  onClose={handleClose}
-                  mentorsList={props.mentorsList}
-                  handleSendRequest={(mentor_id, skill_id) =>
-                    handleSendRequest(mentor_id, skill_id)
-                  }
-                />
-              </ListItem>
-            ))}
+                      >
+                    </button>
+                  </Typography>
+                </ListItem>
+              ))
+            ) : (
+              <Typography variant="body2" color="textSecondary">
+                No available skills yet!
+              </Typography>
+            )}
           </List>
         </CardContent>
       </Collapse>
+      <MentorsDialog
+        selectedSkillId={selectedSkillId}
+        open={open}
+        onClose={handleClose}
+        mentorsList={props.mentorsList}
+        handleSendRequest={(mentor_id, skill_id) =>
+          handleSendRequest(mentor_id, skill_id)
+        }
+      />
     </Card>
   );
 }

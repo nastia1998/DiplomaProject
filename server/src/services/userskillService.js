@@ -2,6 +2,7 @@ import db from "../models";
 import Sequelize from "sequelize";
 import { QueryTypes } from "sequelize";
 import _ from "lodash";
+import skillService from "./skillService";
 
 const Op = Sequelize.Op;
 
@@ -85,10 +86,6 @@ class UserSkillService {
   static async getAllRequests(user_id) {
     try {
       return await db.sequelize.query(
-        // 'select us.id, u."firstName", u."lastName", s.name, s.level_name, s.time_level, us.is_approved_request ' +
-        //   'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
-        //   'join "Users" as u on us.user_id = u.id ' +
-        //   "where us.mentor_id = :mentor_id",
         'select us.id, s.id as skill_id, s.name, s.level_name, u.id as user_id, u.email, u."firstName", u."lastName" ' +
           'from "UserSkills" as us ' +
           'join "Mentors" as me on us.mentor_id = me.id ' +
@@ -166,6 +163,24 @@ class UserSkillService {
           "where me.user_id = :id and us.is_approved_skill = false and us.is_approved_request = true",
         { replacements: { id: user_id }, type: QueryTypes.SELECT }
       );
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async addApprovedUserSkill(newUserSkill) {
+    try {
+      const skill = await skillService.findSkill(newUserSkill.skill_id);
+      const skills = await db.Skill.findAll({ where: { name: skill.name } });
+      skills.forEach(
+        async (i) =>
+          await db.UserSkill.create({
+            user_id: newUserSkill.user_id,
+            skill_id: i.id,
+            is_approved_skill: true,
+          })
+      );
+      return await skills;
     } catch (error) {
       return error.message;
     }

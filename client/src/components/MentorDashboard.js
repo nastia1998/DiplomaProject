@@ -3,13 +3,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
-import {
-  Paper,
-  Button,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@material-ui/core";
+import { IconButton, Tooltip, Typography } from "@material-ui/core";
 import TrendingFlatIcon from "@material-ui/icons/TrendingFlat";
 import { useHistory } from "react-router-dom";
 
@@ -47,6 +41,20 @@ export default function MentorDashboard() {
     }
   }
 
+  async function getStudentsList() {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/v1/userskills/${localStorage.getItem(
+        "userId"
+      )}/students`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setStudentsList(data);
+  }
+
   async function fetchRequestsList() {
     const { data } = await axios.get(
       `http://localhost:3000/api/v1/userskills/${localStorage.getItem(
@@ -80,14 +88,14 @@ export default function MentorDashboard() {
   }
 
   async function approveRequest(userskill_id) {
-    const { data } = axios.put(
-      `http://localhost:3000/api/v1/userskills/${userskill_id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+    await axios.put(`http://localhost:3000/api/v1/userskills/${userskill_id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    fetchRequestsList();
+    fetchFullInfoRequest(0, 0);
+    getStudentsList();
   }
 
   async function rejectRequest(userskill_id) {
@@ -99,24 +107,13 @@ export default function MentorDashboard() {
         },
       }
     );
-  }
-
-  async function getStudentsList() {
-    const { data } = await axios.get(
-      `http://localhost:3000/api/v1/userskills/${localStorage.getItem(
-        "userId"
-      )}/students`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    setStudentsList(data);
+    fetchRequestsList();
+    fetchFullInfoRequest(0, 0);
+    getStudentsList();
   }
 
   async function approveSkill(userskill_id) {
-    const { data } = await axios.put(
+    await axios.put(
       `http://localhost:3000/api/v1/userskills/${userskill_id}/skill`,
       {
         headers: {
@@ -124,6 +121,7 @@ export default function MentorDashboard() {
         },
       }
     );
+    getStudentsList();
   }
 
   const handleGoToStudentDashboard = () => {
@@ -145,7 +143,9 @@ export default function MentorDashboard() {
         </IconButton>
       </Tooltip>
       <main style={styles.content}>
-        <Typography variant="h6">Mentor dashboard</Typography>
+        <Typography variant="h6" style={{ marginTop: "5px" }}>
+          Mentor dashboard
+        </Typography>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={6}>
@@ -163,16 +163,12 @@ export default function MentorDashboard() {
                 studentSkills={studentSkills}
                 approveRequest={(userskill_id) => approveRequest(userskill_id)}
                 rejectRequest={(userskill_id) => rejectRequest(userskill_id)}
-                getStudentsList={() => getStudentsList()}
-                fetchRequestsList={() => fetchRequestsList()}
               />
             </Grid>
             <Grid item xs={12}>
               <StudentsList
                 studentsList={studentsList}
                 approveSkill={(userskill_id) => approveSkill(userskill_id)}
-                getStudentsList={getStudentsList}
-                fetchRequestsList={fetchRequestsList}
               />
             </Grid>
           </Grid>

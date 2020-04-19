@@ -33,7 +33,6 @@ export default function App() {
   const handleLogin = (e) => setIsLogin(true);
 
   const handleShowMessage = (severity, messText) => {
-    console.log(severity);
     setOpenMessage(true);
     setSeverity(severity);
     setMessageText(messText);

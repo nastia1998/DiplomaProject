@@ -2,8 +2,7 @@ import React from "react";
 import { Card, CardHeader, CardContent, Typography } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import styles from "../styles/StudentDashboard.css";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,34 +24,35 @@ export default function StudentRequestsQueue(props) {
   };
 
   return (
-    <div
-      style={(styles.fixedHeight, styles.requеstsList)}
-      className={classes.root}
-    >
-      {props.unconfirmedRequests
-        ? props.unconfirmedRequests.map((i) => (
-            <Card key={i.skill_id}>
-              <CardHeader
-                title={i.name}
-                id={i.id}
-                action={
-                  <IconButton
-                    aria-label="delete"
-                    id={i.id}
-                    onClick={(e) => handleCancelRequest(e)}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                }
-              />
-              <CardContent>
-                <Typography variant="body2">
-                  {i.email} {i.firstName} {i.lastName}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))
-        : ""}
+    <div style={{ height: 500 }} className={classes.root}>
+      {props.unconfirmedRequests.length > 0 ? (
+        props.unconfirmedRequests.map((i) => (
+          <Card key={i.skill_id} style={{ marginBottom: "15px" }}>
+            <CardHeader
+              title={i.name}
+              id={i.id}
+              action={
+                <IconButton
+                  aria-label="delete"
+                  id={i.id}
+                  onClick={(e) => handleCancelRequest(e)}
+                >
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
+            <CardContent>
+              <Typography variant="body2">
+                {i.email} {i.firstName} {i.lastName}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        <Typography variant="h6" color="textSecondary">
+          Nothing in the requests queue
+        </Typography>
+      )}
     </div>
   );
 }
