@@ -38,7 +38,12 @@ const columns = [
   { id: "action", label: "Action", minWidth: 20, align: "center" },
   { id: "name", label: "Name", minWidth: 10, align: "center" },
   { id: "level", label: "Level name", minWidth: 15, align: "center" },
-  { id: "time", label: "Time for level", minWidth: 10, align: "center" },
+  {
+    id: "time",
+    label: "Time for level (months)",
+    minWidth: 10,
+    align: "center",
+  },
   // {
   //   id: "description",
   //   label: "Description",
@@ -179,7 +184,7 @@ export default function SkillsTable(props) {
   };
 
   const handleEditableRow = (editRow) => {
-    setDescription(editRow.description);
+    // setDescription(editRow.description);
     setLevelName(editRow.level_name);
     setLevelTime(editRow.time_level);
     const skillTable = document.getElementsByClassName("skillsTable")[0];
@@ -192,7 +197,7 @@ export default function SkillsTable(props) {
         if (!row.cells[1].innerHTML || !row.cells[3].innerHTML) {
           props.handleShowMessage("error", "Please, fill in all the fields!");
         } else {
-          addSkill(row.cells[1].innerHTML, levelName, levelTime, description);
+          addSkill(row.cells[1].innerHTML, levelName, +levelTime, description);
           row.contentEditable = "false";
         }
       } else {
