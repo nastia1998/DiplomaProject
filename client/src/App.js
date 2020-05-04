@@ -7,6 +7,7 @@ import SignIn from "./components/SignIn";
 import ManagerDashboard from "./components/ManagerDashboard";
 import StudentDashboard from "./components/StudentDashboard";
 import MentorDashboard from "./components/MentorDashboard";
+import MentorDashboard2 from "./components/MentorDashboard2";
 
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
@@ -90,7 +91,7 @@ export default function App() {
           name="mentordashboard"
           exact
           path="/mentordashboard"
-          component={MentorDashboard}
+          component={MentorDashboard2}
         />
       </Router>
       <Box pt={4}>

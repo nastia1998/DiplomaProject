@@ -86,7 +86,7 @@ class UserSkillService {
   static async getAllRequests(user_id) {
     try {
       return await db.sequelize.query(
-        'select us.id, s.id as skill_id, s.name, s.level_name, u.id as user_id, u.email, u."firstName", u."lastName" ' +
+        'select us.id as user_skill_id, s.id as skill_id, s.name, s.level_name, u.id as user_id, u.email, u."firstName", u."lastName" ' +
           'from "UserSkills" as us ' +
           'join "Mentors" as me on us.mentor_id = me.id ' +
           'join "Users" as u on us.user_id = u.id ' +
