@@ -128,7 +128,7 @@ class UserSkillService {
   static async getConfirmedRequests(user_id) {
     try {
       return await db.sequelize.query(
-        'select me.id as mentor_id, s.id as skill_id, s.name, s.level_name, u.email, u."firstName", u."lastName" ' +
+        'select us.id as userskill_id, me.id as mentor_id, s.id as skill_id, s.name, s.level_name, u.email, u."firstName", u."lastName" ' +
           'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
           'join "Mentors" as me on us.mentor_id = me.id ' +
           'join "Users" as u on me.user_id = u.id ' +

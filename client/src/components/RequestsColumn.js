@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Typography, List } from "@material-ui/core";
+import { Container, List } from "@material-ui/core";
 import { Droppable } from "react-beautiful-dnd";
 import Request from "./Request";
 
@@ -10,9 +10,8 @@ export default function Column(props) {
         display: "flex",
         flexDirection: "column",
         border: "1px solid #e0e0e0",
-        // borderRadius: "255px 15px 225px 25px/25px 225px 15px 255px",
         height: 571,
-        margin: 20,
+        margin: 10,
       }}
     >
       <span style={{ textAlign: "center", fontSize: "1.2rem" }}>Requests</span>
@@ -38,7 +37,6 @@ export default function Column(props) {
                   />
                 ))
               : ""}
-
             {provided.placeholder}
           </List>
         )}

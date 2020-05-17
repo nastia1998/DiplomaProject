@@ -4,16 +4,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   Collapse,
   List,
-  ListItem,
   ListItemText,
   ListItemIcon,
   Avatar,
-  Card,
-  CardMedia,
-  withStyles,
-  CardContent,
   Grid,
-  Typography,
   Divider,
 } from "@material-ui/core";
 
@@ -124,7 +118,7 @@ export default function Request(props) {
           >
             <Grid container>
               <Grid item xs={6}>
-                <ListItem>{props.request.name}</ListItem>
+                <span>{props.request.name}</span>
               </Grid>
               <Grid item xs={6}>
                 <Circle value={props.request.level_name} />

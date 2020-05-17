@@ -84,7 +84,27 @@ export default function MentorDashboard2() {
         },
       }
     );
-    setStudentsList(data);
+
+    const result = [];
+    const skills = [];
+    const map = new Map();
+
+    for (const item of data) {
+    }
+
+    for (const item of data) {
+      if (!map.has(item.user_id)) {
+        map.set(item.user_id, true);
+        result.push({
+          user_id: item.user_id,
+          email: item.email,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          middleName: item.middleName,
+        });
+      }
+    }
+    setStudentsList(result);
   }
 
   async function approveRequest(userskill_id) {
