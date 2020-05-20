@@ -88,19 +88,37 @@ export default function MentorDashboard() {
   }
 
   async function approveRequest(userskill_id) {
-    await axios.put(`http://localhost:3000/api/v1/userskills/${userskill_id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    await axios.put(
+      `http://localhost:3000/api/v1/userskills/${userskill_id}/approve`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     fetchRequestsList();
     fetchFullInfoRequest(0, 0);
     getStudentsList();
   }
 
   async function rejectRequest(userskill_id) {
-    await axios.delete(
-      `http://localhost:3000/api/v1/userskills/${userskill_id}`,
+    console.log(userskill_id);
+    await axios.put(
+      `http://localhost:3000/api/v1/userskills/${userskill_id}/cancel`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    fetchRequestsList();
+    fetchFullInfoRequest(0, 0);
+    getStudentsList();
+  }
+
+  async function rejectSkill(userskill_id) {
+    await axios.put(
+      `http://localhost:3000/api/v1/userskills/${userskill_id}/cancel`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -169,6 +187,7 @@ export default function MentorDashboard() {
               <StudentsList
                 studentsList={studentsList}
                 approveSkill={(userskill_id) => approveSkill(userskill_id)}
+                rejectSkill={(userskill_id) => rejectSkill(userskill_id)}
               />
             </Grid>
           </Grid>

@@ -1,6 +1,7 @@
 {
     "scripts": {
-        "start": "nodemon ./src/start.js"
+        "start": "nodemon ./src/start.js",
+        "test": "mocha ./tests --reporter spec"
     },
     "dependencies": {
         "@babel/runtime": "^7.6.3",

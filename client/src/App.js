@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import NavBar from "./components/NavBar";
@@ -11,6 +11,8 @@ import MentorDashboard from "./components/MentorDashboard";
 import Typography from "@material-ui/core/Typography";
 import Link from "@material-ui/core/Link";
 import Box from "@material-ui/core/Box";
+
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -30,7 +32,13 @@ export default function App() {
   const [messageText, setMessageText] = useState("");
   const [severity, setSeverity] = useState("");
 
-  const handleLogin = (e) => setIsLogin(true);
+  const [open, setOpen] = useState(false);
+  // const [rejectedRequests, setRejectedRequests] = useState([]);
+  // const [countNotifications, setCountNotifications] = useState(0);
+
+  const handleLogin = (e) => {
+    setIsLogin(true);
+  };
 
   const handleShowMessage = (severity, messText) => {
     setOpenMessage(true);
@@ -45,10 +53,72 @@ export default function App() {
     setOpenMessage(false);
   };
 
+  // async function fetchRejectedRequests(user_id) {
+  //   const { data } = await axios.get(
+  //     `http://localhost:3000/api/v1/userskills/${user_id}/requests/rejected`,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     }
+  //   );
+  //   setRejectedRequests(data);
+  //   // if (data.length > 0) setCountNotifications(data.length);
+  //   console.log(data.length);
+  //   setCountNotifications(data.length);
+  // }
+
+  // async function confirmNotification(userskill_id) {
+  //   await axios.delete(
+  //     `http://localhost:3000/api/v1/userskills/${userskill_id}/notifications`,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     }
+  //   );
+  // }
+
+  // const updateRejectedRequests = async (id) => {
+  //   const newRejectedRequests = rejectedRequests.filter(
+  //     (item) => item.userskill_id !== +id
+  //   );
+  //   setRejectedRequests(newRejectedRequests);
+  //   const newCountNotifications = countNotifications - 1;
+  //   setCountNotifications(newCountNotifications);
+  // };
+
+  // const getCount = async () => {
+  //   if (localStorage.getItem("userId"))
+  //     fetchRejectedRequests(localStorage.getItem("userId"));
+  // };
+
+  // useEffect(() => {
+  //   if (localStorage.getItem("userId"))
+  //     fetchRejectedRequests(localStorage.getItem("userId"));
+  // }, []);
+
+  const handleClickOpen = (e) => {
+    setOpen(true);
+  };
+  const handleClose = (value) => {
+    setOpen(false);
+  };
+
   return (
     <div>
       <Router>
-        <NavBar isLogin={isLogin} />
+        <NavBar
+          isLogin={isLogin}
+          open={open}
+          handleClickOpen={handleClickOpen}
+          onClose={handleClose}
+          // rejectedequests={rejectedRequests}
+          // confirmNotification={(e) => confirmNotification(e)}
+          // updateRejectedRequests={(id) => updateRejectedRequests(id)}
+          // countNotifications={countNotifications}
+          // updateCount={() => getCount()}
+        />
         <Route
           name="signin"
           exact

@@ -156,6 +156,18 @@ class userskillController {
     }
   }
 
+  static async approveNotitication(req, res) {
+    try {
+      const { userskill_id } = req.params;
+      const deletedRequest = await userskillService.approveNotitication(
+        userskill_id
+      );
+      return res.status(200).send(deletedRequest);
+    } catch (error) {
+      return error.message;
+    }
+  }
+
   static async getStudetsForMentor(req, res) {
     try {
       const { user_id } = req.params;
@@ -178,6 +190,19 @@ class userskillController {
         newUserSkill
       );
       return res.status(200).send(userSkill);
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async getRejectedRequests(req, res) {
+    try {
+      const { user_id } = req.params;
+      const rejectedRequests = await userskillService.getRejectedRequests(
+        +user_id
+      );
+      console.log(333, req.params);
+      return res.status(200).send(rejectedRequests);
     } catch (error) {
       return error.message;
     }

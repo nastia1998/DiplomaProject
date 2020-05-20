@@ -17,6 +17,9 @@ const {
   cancelRequest,
   getStudetsForMentor,
   addApprovedUserSkill,
+  getRejectedRequests,
+  approveNotitication,
+  rejectSkill,
 } = userskillController;
 
 const router = express.Router();
@@ -32,12 +35,14 @@ router.get(
 router.get("/:user_id/requests", getAllRequests);
 router.get("/:user_id/requests/unconfirmed", getUnconfirmedRequests);
 router.get("/:user_id/requests/confirmed", getConfirmedRequests);
+router.get("/:user_id/requests/rejected", getRejectedRequests);
 router.get("/:user_id/students", getStudetsForMentor);
 router.post("/requests", sendRequestToMentor);
 router.post("/", addUserSkill);
 router.post("/approved", addApprovedUserSkill);
-router.put("/:userskill_id", approveRequest);
+router.put("/:userskill_id/approve", approveRequest);
 router.put("/:userskill_id/skill", approveUserSkill);
-router.delete("/:userskill_id", cancelRequest);
+router.put("/:userskill_id/cancel", cancelRequest);
+router.delete("/:userskill_id/notifications", approveNotitication);
 
 export default router;

@@ -75,7 +75,6 @@ class MentorService {
           },
         ],
       });
-      console.log(mentorWithUserInfo);
       return await db.UserSkill.findAll({
         attributes: [],
         where: {

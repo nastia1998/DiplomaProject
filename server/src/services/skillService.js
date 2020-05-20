@@ -23,14 +23,6 @@ class SkillService {
   static async getAvailableSkillsForUser(userId) {
     try {
       return await db.sequelize.query(
-        // "select distinct on (s.name) s.name, s.level_name, s.id, s.time_level, s.description " +
-        //   'from "UserSkills" as us ' +
-        //   'join "Skills" as s on us.skill_id = s.id ' +
-        //   'join "Users" as u on us.user_id = u.id ' +
-        //   'join "Mentors" as me on u.id = me.user_id ' +
-        //   'where s.id not in (SELECT skill_id from "UserSkills" WHERE user_id = :id) ' +
-        //   "and us.is_approved_request = false " +
-        //   "order by s.name, s.level_name",
         "select distinct on (s.name) s.name, s.level_name, s.id, s.time_level, s.description, me.id as mentor_id " +
           'from "UserSkills" as us ' +
           'join "Skills" as s on us.skill_id = s.id ' +

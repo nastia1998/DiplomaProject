@@ -10,6 +10,7 @@ import {
   ListSubheader,
 } from "@material-ui/core";
 import ThumbUpAltOutlinedIcon from "@material-ui/icons/ThumbUpAltOutlined";
+import ThumbDownAltOutlinedIcon from "@material-ui/icons/ThumbDownAltOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 
 import styles from "../styles/MentorDashboard.css";
@@ -32,6 +33,16 @@ export default function StudentsList(props) {
       userskillid = e.target.id;
     }
     props.approveSkill(+userskillid);
+  };
+
+  const handleRejectSkill = (e) => {
+    let userskillid;
+    if (!e.target.id) {
+      userskillid = e.target.closest("button").id;
+    } else {
+      userskillid = e.target.id;
+    }
+    props.rejectSkill(+userskillid);
   };
 
   return (
@@ -65,6 +76,13 @@ export default function StudentsList(props) {
                   onClick={handleApproveSkill}
                 >
                   <ThumbUpAltOutlinedIcon />
+                </IconButton>
+                <IconButton
+                  key={i.user_skill_id}
+                  id={i.user_skill_id}
+                  onClick={handleRejectSkill}
+                >
+                  <ThumbDownAltOutlinedIcon>Reject</ThumbDownAltOutlinedIcon>
                 </IconButton>
               </ListItem>
             ))

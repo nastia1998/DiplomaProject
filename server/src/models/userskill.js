@@ -5,7 +5,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       is_approved_request: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false,
       },
       is_approved_skill: {
         type: DataTypes.BOOLEAN,

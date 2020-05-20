@@ -3,6 +3,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import RefreshIcon from "@material-ui/icons/Refresh";
 import { useHistory } from "react-router-dom";
 
 import styles from "../styles/StudentDashboard.css";
@@ -130,7 +131,7 @@ export default function StudentDashboard() {
 
   async function cancelRequest(userskill_id) {
     await axios.delete(
-      `http://localhost:3000/api/v1/userskills/${userskill_id}`,
+      `http://localhost:3000/api/v1/userskills/${userskill_id}/notifications`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -144,6 +145,11 @@ export default function StudentDashboard() {
 
   const handleGoToMentorDashboard = () => {
     history.push("/mentordashboard");
+  };
+
+  const handleRefresh = () => {
+    fetchStudentSkills();
+    fetchAvailableSkills();
   };
 
   useEffect(() => {
@@ -170,6 +176,9 @@ export default function StudentDashboard() {
       <main style={styles.content}>
         <Typography variant="h6" style={{ marginTop: 5, marginLeft: 15 }}>
           Student dashboard
+          <IconButton onClick={() => handleRefresh()}>
+            <RefreshIcon />
+          </IconButton>
         </Typography>
         <Container maxWidth="lg" style={styles.container}>
           <Grid container spacing={3}>

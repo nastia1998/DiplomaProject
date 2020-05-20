@@ -91,7 +91,7 @@ class UserSkillService {
           'join "Mentors" as me on us.mentor_id = me.id ' +
           'join "Users" as u on us.user_id = u.id ' +
           'join "Skills" as s on us.skill_id = s.id ' +
-          "where me.user_id = :user_id and us.is_approved_request = false",
+          "where me.user_id = :user_id and us.is_approved_request is null",
         { replacements: { user_id: user_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {
@@ -117,7 +117,7 @@ class UserSkillService {
           'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
           'join "Mentors" as me on us.mentor_id = me.id ' +
           'join "Users" as u on me.user_id = u.id ' +
-          "where us.user_id = :user_id and us.is_approved_request = false",
+          "where us.user_id = :user_id and us.is_approved_request is null",
         { replacements: { user_id: user_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {
@@ -143,11 +143,31 @@ class UserSkillService {
 
   static async cancelRequest(userskill_id) {
     try {
+      console.log(333333333333333333333333333, userskill_id);
       return await db.sequelize.query(
-        'delete from "UserSkills" where id = :id ',
-        { replacements: { id: userskill_id }, type: QueryTypes.SELECT }
+        'update "UserSkills" set is_approved_request = false where id = :userskill_id',
+        {
+          replacements: { userskill_id: userskill_id },
+          type: QueryTypes.SELECT,
+        }
       );
     } catch (error) {
+      console.log(error.message);
+      return error.message;
+    }
+  }
+
+  static async approveNotitication(userskill_id) {
+    try {
+      return await db.sequelize.query(
+        'delete from "UserSkills" where id = :userskill_id',
+        {
+          replacements: { userskill_id: userskill_id },
+          type: QueryTypes.SELECT,
+        }
+      );
+    } catch (error) {
+      console.log(error.message);
       return error.message;
     }
   }
@@ -182,6 +202,22 @@ class UserSkillService {
       );
       return await skills;
     } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async getRejectedRequests(user_id) {
+    try {
+      return await db.sequelize.query(
+        'select  us.id as userskill_id, s.name, s.level_name, me.id, u.email, u."firstName", u."lastName" ' +
+          'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
+          'join "Mentors" as me on us.mentor_id = me.id ' +
+          'join "Users" as u on me.user_id = u.id ' +
+          "where us.user_id = :id and us.is_approved_request = false ",
+        { replacements: { id: user_id }, type: QueryTypes.SELECT }
+      );
+    } catch (error) {
+      console.log(8809, error.message);
       return error.message;
     }
   }
