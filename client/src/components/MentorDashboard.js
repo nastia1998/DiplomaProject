@@ -118,15 +118,13 @@ export default function MentorDashboard() {
 
   async function rejectSkill(userskill_id) {
     await axios.put(
-      `http://localhost:3000/api/v1/userskills/${userskill_id}/cancel`,
+      `http://localhost:3000/api/v1/userskills/${userskill_id}/skill/reject`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
-    fetchRequestsList();
-    fetchFullInfoRequest(0, 0);
     getStudentsList();
   }
 

@@ -39,6 +39,16 @@ class userskillController {
     }
   }
 
+  static async rejectSkill(req, res) {
+    try {
+      const { userskill_id } = req.params;
+      const count = await userskillService.rejectSkill(userskill_id);
+      return res.status(200).send(count);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  }
+
   static async getUserSkillsByUserId(req, res) {
     try {
       const { user_id } = req.params;
@@ -65,7 +75,6 @@ class userskillController {
         return res.json("IDs of user, skill and mentor are required!");
       }
       const newRequest = req.body;
-      console.log(newRequest);
       await userskillService.sendRequestToMentor(newRequest);
       return res.status(201).send();
     } catch (error) {
@@ -203,6 +212,16 @@ class userskillController {
       );
       console.log(333, req.params);
       return res.status(200).send(rejectedRequests);
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  static async getRejectedSkills(req, res) {
+    try {
+      const { user_id } = req.params;
+      const rejectedSkills = await userskillService.getRejectedSkills(+user_id);
+      return res.status(200).send(rejectedSkills);
     } catch (error) {
       return error.message;
     }

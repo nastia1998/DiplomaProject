@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       is_approved_skill: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false,
       },
     },
     {}

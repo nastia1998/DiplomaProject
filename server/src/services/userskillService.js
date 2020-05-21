@@ -43,6 +43,23 @@ class UserSkillService {
     }
   }
 
+  static async rejectSkill(userSkillId) {
+    try {
+      return await db.UserSkill.update(
+        {
+          is_approved_skill: false,
+        },
+        {
+          where: {
+            id: userSkillId,
+          },
+        }
+      );
+    } catch (error) {
+      return error.message;
+    }
+  }
+
   static async getUserSkillsByUserId(userId) {
     try {
       return await db.sequelize.query(
@@ -133,7 +150,8 @@ class UserSkillService {
           'join "Mentors" as me on us.mentor_id = me.id ' +
           'join "Users" as u on me.user_id = u.id ' +
           "where us.user_id = :user_id and us.is_approved_request = true " +
-          "and us.is_approved_skill = false",
+          // "and us.is_approved_skill = false",
+          "and us.is_approved_skill is null",
         { replacements: { user_id: user_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {
@@ -180,7 +198,7 @@ class UserSkillService {
           'join "Users" as u on us.user_id = u.id ' +
           'join "Skills" as s on us.skill_id = s.id ' +
           'join "Mentors" as me on us.mentor_id = me.id ' +
-          "where me.user_id = :id and us.is_approved_skill = false and us.is_approved_request = true",
+          "where me.user_id = :id and us.is_approved_skill is null and us.is_approved_request = true",
         { replacements: { id: user_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {
@@ -217,7 +235,20 @@ class UserSkillService {
         { replacements: { id: user_id }, type: QueryTypes.SELECT }
       );
     } catch (error) {
-      console.log(8809, error.message);
+      return error.message;
+    }
+  }
+  static async getRejectedSkills(user_id) {
+    try {
+      return await db.sequelize.query(
+        'select  us.id as userskill_id, s.name, s.level_name, me.id, u.email, u."firstName", u."lastName" ' +
+          'from "UserSkills" as us join "Skills" as s on us.skill_id = s.id ' +
+          'join "Mentors" as me on us.mentor_id = me.id ' +
+          'join "Users" as u on me.user_id = u.id ' +
+          "where us.user_id = :id and us.is_approved_skill = false and us.is_approved_request = true ",
+        { replacements: { id: user_id }, type: QueryTypes.SELECT }
+      );
+    } catch (error) {
       return error.message;
     }
   }

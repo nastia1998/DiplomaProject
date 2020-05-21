@@ -18,6 +18,7 @@ const {
   getStudetsForMentor,
   addApprovedUserSkill,
   getRejectedRequests,
+  getRejectedSkills,
   approveNotitication,
   rejectSkill,
 } = userskillController;
@@ -36,6 +37,7 @@ router.get("/:user_id/requests", getAllRequests);
 router.get("/:user_id/requests/unconfirmed", getUnconfirmedRequests);
 router.get("/:user_id/requests/confirmed", getConfirmedRequests);
 router.get("/:user_id/requests/rejected", getRejectedRequests);
+router.get("/:user_id/skills/rejected", getRejectedSkills);
 router.get("/:user_id/students", getStudetsForMentor);
 router.post("/requests", sendRequestToMentor);
 router.post("/", addUserSkill);
@@ -43,6 +45,7 @@ router.post("/approved", addApprovedUserSkill);
 router.put("/:userskill_id/approve", approveRequest);
 router.put("/:userskill_id/skill", approveUserSkill);
 router.put("/:userskill_id/cancel", cancelRequest);
+router.put("/:userskill_id/skill/reject", rejectSkill);
 router.delete("/:userskill_id/notifications", approveNotitication);
 
 export default router;

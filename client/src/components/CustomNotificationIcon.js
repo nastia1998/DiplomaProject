@@ -4,7 +4,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 
 export default function CustomNotificationIcon(props) {
   return (
-    <Badge badgeContent={props.count} color="error">
+    <Badge badgeContent={props.count + props.rejSkillsCount} color="error">
       <NotificationsIcon />
     </Badge>
   );

@@ -15,7 +15,9 @@ export default function NavBar(props) {
   const [count, setCount] = useState(0);
   // const [open, setOpen] = useState(false);
   const [rejectedRequests, setRejectedRequests] = useState([]);
+  const [rejectedSkills, setRejectedSkills] = useState([]);
   const [countNotifications, setCountNotifications] = useState(0);
+  const [countRejectedSkills, setCountRejectedSkills] = useState(0);
 
   async function fetchRejectedRequests(user_id) {
     const { data } = await axios.get(
@@ -29,6 +31,20 @@ export default function NavBar(props) {
     setRejectedRequests(data);
     console.log(data.length);
     if (data.length > 0) setCountNotifications(data.length);
+  }
+
+  async function fetchRejectedSkills(user_id) {
+    const { data } = await axios.get(
+      `http://localhost:3000/api/v1/userskills/${user_id}/skills/rejected`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setRejectedSkills(data);
+    console.log(data.length);
+    if (data.length > 0) setCountRejectedSkills(data.length);
   }
 
   async function confirmNotification(userskill_id) {
@@ -50,6 +66,14 @@ export default function NavBar(props) {
     const newCountNotifications = countNotifications - 1;
     setCountNotifications(newCountNotifications);
   };
+  const updateRejectedSkills = async (id) => {
+    const newRejectedSkills = rejectedSkills.filter(
+      (item) => item.userskill_id !== +id
+    );
+    setRejectedSkills(newRejectedSkills);
+    const newCountRejectedSkills = countRejectedSkills - 1;
+    setCountRejectedSkills(newCountRejectedSkills);
+  };
 
   const fetchCountNotifications = async () => {
     setCount(countNotifications);
@@ -57,9 +81,13 @@ export default function NavBar(props) {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("userId"))
+    if (localStorage.getItem("userId")) {
       fetchRejectedRequests(localStorage.getItem("userId"));
+      fetchRejectedSkills(localStorage.getItem("userId"));
+    }
+
     console.log(rejectedRequests);
+    console.log(countNotifications);
     setCount(countNotifications);
     fetchCountNotifications();
     // props.getCount();
@@ -81,7 +109,10 @@ export default function NavBar(props) {
               style={styles.menuButton}
               onClick={(e) => props.handleClickOpen(e)}
             >
-              <CustomNotificationIcon count={countNotifications} />
+              <CustomNotificationIcon
+                count={countNotifications}
+                rejSkillsCount={countRejectedSkills}
+              />
             </IconButton>
             <Button href="/" onClick={handleLogOut} style={styles.menuButton}>
               Sign out
@@ -95,8 +126,10 @@ export default function NavBar(props) {
         open={props.open}
         onClose={props.onClose}
         rejectedRequests={rejectedRequests}
+        rejectedSkills={rejectedSkills}
         confirmNotification={(e) => confirmNotification(e)}
         updateRejectedRequests={(id) => updateRejectedRequests(id)}
+        updateRejectedSkills={(id) => updateRejectedSkills(id)}
       />
     </AppBar>
   );

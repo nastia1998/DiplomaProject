@@ -126,6 +126,7 @@ export default function Profile(props) {
                   {
                     true: "Finished",
                     false: "In process",
+                    null: "In process",
                   }[skill.is_approved_skill]
                 }
               </Typography>

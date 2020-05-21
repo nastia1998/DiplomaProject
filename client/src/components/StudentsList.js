@@ -51,9 +51,9 @@ export default function StudentsList(props) {
         <ListSubheader>My students</ListSubheader>
         {props.studentsList
           ? props.studentsList.map((i) => (
-              <ListItem key={i.user_id} button>
+              <ListItem key={i.user_skill_id} button>
                 <ListItemIcon>
-                  <Avatar aria-label="recipe">
+                  <Avatar>
                     {i.firstName ? i.firstName.substring(0, 1) : "N"}
                   </Avatar>
                 </ListItemIcon>

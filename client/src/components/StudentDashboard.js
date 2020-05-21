@@ -49,6 +49,7 @@ export default function StudentDashboard() {
         "userId"
       )}`
     );
+    console.log(data);
     setStundentSkills(data);
   }
 

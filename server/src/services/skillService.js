@@ -32,7 +32,8 @@ class SkillService {
           '(SELECT skill_id from "UserSkills" WHERE user_id = :id and is_approved_skill=true) ' +
           "and s.name not in " +
           '(select distinct s.name from "Skills" as s join "UserSkills" as us on s.id = us.skill_id where us.user_id = :id ' +
-          "and us.is_approved_skill = false) " +
+          // "and us.is_approved_skill = false) " +
+          "and us.is_approved_skill is null or us.is_approved_skill = false ) " +
           "order by s.name, s.level_name ",
         { replacements: { id: userId }, type: QueryTypes.SELECT }
       );

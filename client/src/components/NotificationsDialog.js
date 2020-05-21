@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   List,
@@ -33,6 +33,22 @@ export default function NotificationsDialog(props) {
     props.updateRejectedRequests(+userskillid);
   };
 
+  const handleRejectedSkill = (e) => {
+    let userskillid;
+    if (!e.target.id) {
+      userskillid = e.target.closest("button").id;
+    } else {
+      userskillid = e.target.id;
+    }
+    console.log(userskillid);
+    props.confirmNotification(+userskillid);
+    props.updateRejectedSkills(+userskillid);
+  };
+
+  useEffect(() => {
+    console.log(props.rejectedRequests);
+  }, []);
+
   return (
     <Dialog
       onClose={handleClose}
@@ -43,32 +59,60 @@ export default function NotificationsDialog(props) {
         Notifications
       </DialogTitle>
       <List>
-        {props.rejectedRequests && props.rejectedRequests.length > 0 ? (
-          props.rejectedRequests.map((i) => (
-            <Box display="flex" key={i.userskill_id}>
-              <ListItem
-                button
-                key={i.userskill_id}
-                id={i.userskill_id}
-                className="mentor"
-                alignItems="flex-start"
-              >
-                <Typography variant="body2" color="textPrimary">
-                  {i.firstName} {i.lastName} rejected your request to learn{" "}
-                  <strong>
-                    {i.name} {i.level_name}
-                  </strong>
-                </Typography>
-              </ListItem>
-              <Button
-                id={i.userskill_id}
-                onClick={(e) => handleNotification(e)}
-              >
-                OK
-              </Button>
-            </Box>
-          ))
-        ) : (
+        {props.rejectedRequests && props.rejectedRequests.length > 0
+          ? props.rejectedRequests.map((i) => (
+              <Box display="flex" key={i.userskill_id}>
+                <ListItem
+                  button
+                  key={i.userskill_id}
+                  id={i.userskill_id}
+                  className="mentor"
+                  alignItems="flex-start"
+                >
+                  <Typography variant="body2" color="textPrimary">
+                    {i.firstName} {i.lastName} rejected your request to learn{" "}
+                    <strong>
+                      {i.name} {i.level_name}
+                    </strong>
+                  </Typography>
+                </ListItem>
+                <Button
+                  id={i.userskill_id}
+                  onClick={(e) => handleNotification(e)}
+                >
+                  OK
+                </Button>
+              </Box>
+            ))
+          : ""}
+        {props.rejectedSkills && props.rejectedSkills.length > 0
+          ? props.rejectedSkills.map((i) => (
+              <Box display="flex" key={i.userskill_id}>
+                <ListItem
+                  button
+                  key={i.userskill_id}
+                  id={i.userskill_id}
+                  className="mentor"
+                  alignItems="flex-start"
+                >
+                  <Typography variant="body2" color="textPrimary">
+                    {i.firstName} {i.lastName} did not approve skill{" "}
+                    <strong>
+                      {i.name} {i.level_name}
+                    </strong>
+                  </Typography>
+                </ListItem>
+                <Button
+                  id={i.userskill_id}
+                  onClick={(e) => handleRejectedSkill(e)}
+                >
+                  OK
+                </Button>
+              </Box>
+            ))
+          : ""}
+        {props.rejectedSkills.length === 0 &&
+        props.rejectedRequests.length === 0 ? (
           <Typography
             variant="body2"
             color="textSecondary"
@@ -76,6 +120,8 @@ export default function NotificationsDialog(props) {
           >
             Here you can see some notifications
           </Typography>
+        ) : (
+          ""
         )}
       </List>
     </Dialog>
